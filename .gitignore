@@ -1,0 +1,58 @@
+# ==============================================================================
+# FASTBITE — GIT IGNORE CONFIGURATION
+# ==============================================================================
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Local configuration overrides
+config/local.php
+config/database.local.php
+config/*.local.*
+
+# Database dumps & SQL backups containing customer data
+*.sql
+*.sql.gz
+*.dump
+backup/
+backups/
+dumps/
+database_dumps/
+
+# Logs & Debug data
+*.log
+logs/
+debug/
+error_log
+php_errors.log
+
+# Temporary test artifacts & scratch files
+scratch/
+tests/_output/
+.phpunit.result.cache
+coverage/
+
+# Uploaded user avatars & media (preserve placeholders)
+uploads/avatars/*
+!uploads/avatars/.gitkeep
+uploads/receipts/*
+!uploads/receipts/.gitkeep
+assets/images/uploads/*
+!assets/images/uploads/.gitkeep
+
+# IDE, OS, and Editor files
+.vscode/
+.idea/
+*.sublime-workspace
+*.sublime-project
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Composer & Node dependencies
+/vendor/
+/node_modules/
+package-lock.json
+composer.lock
