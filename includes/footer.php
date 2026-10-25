@@ -55,15 +55,15 @@
                 <ul class="list-unstyled d-flex flex-column gap-2 small mb-0">
                     <li class="d-flex align-items-start gap-2 text-muted">
                         <i class="bi bi-geo-alt text-primary-accent mt-1"></i>
-                        <span>City Center, Hargeisa</span>
+                        <span>City Center, Bosaso</span>
                     </li>
                     <li class="d-flex align-items-center gap-2">
                         <i class="bi bi-telephone text-primary-accent"></i>
-                        <a href="tel:+252630000000" class="text-decoration-none text-muted hover-pink">+252 63 000 0000</a>
+                        <a href="tel:+252907619928" class="text-decoration-none text-muted hover-pink">+252 90 761 9928</a>
                     </li>
                     <li class="d-flex align-items-center gap-2">
                         <i class="bi bi-envelope text-primary-accent"></i>
-                        <a href="mailto:support@fastbite.com" class="text-decoration-none text-muted hover-pink">support@fastbite.com</a>
+                        <a href="mailto:yaasmiin378@gmail.com" class="text-decoration-none text-muted hover-pink">yaasmiin378@gmail.com</a>
                     </li>
                     <li class="d-flex align-items-center gap-2 text-muted">
                         <i class="bi bi-clock text-primary-accent"></i>

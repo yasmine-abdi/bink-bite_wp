@@ -1,9 +1,11 @@
 <?php
 /**
  * FastBite - Contact Us Section Component
- * Step 10: Contact Us Section (Frontend-Only Static Demo Data)
+ * Step 10: Contact Us Section
  * Design Identity: Pink & White
  */
+
+$restPhone = function_exists('dbGetSetting') ? dbGetSetting('restaurant_phone', '+252 90 761 9928') : '+252 90 761 9928';
 
 $contactDetails = [
     [
@@ -11,20 +13,20 @@ $contactDetails = [
         'icon' => 'bi bi-geo-alt',
         'title' => 'Our Location',
         'line1' => 'FastBite Restaurant',
-        'line2' => 'Main Street, City Center'
+        'line2' => 'City Center, Bosaso'
     ],
     [
         'id' => 'contact-phone',
         'icon' => 'bi bi-telephone',
         'title' => 'Call Us',
-        'line1' => '+252 63 000 0000',
+        'line1' => '+252 90 761 9928',
         'line2' => 'Customer Support &amp; Orders'
     ],
     [
         'id' => 'contact-email',
         'icon' => 'bi bi-envelope',
         'title' => 'Email Us',
-        'line1' => 'hello@fastbite.example',
+        'line1' => 'yaasmiin378@gmail.com',
         'line2' => 'Quick response within 24h'
     ],
     [
@@ -57,7 +59,13 @@ $contactDetails = [
                                 </div>
                                 <div class="contact-info-content">
                                     <h3 class="contact-info-title mb-1"><?= htmlspecialchars($info['title'], ENT_QUOTES, 'UTF-8'); ?></h3>
-                                    <p class="contact-info-text mb-0 fw-semibold text-dark"><?= $info['line1']; ?></p>
+                                    <?php if ($info['id'] === 'contact-phone'): ?>
+                                        <p class="contact-info-text mb-0 fw-semibold text-dark">
+                                            <a href="tel:+252907619928" class="text-decoration-none text-dark hover-pink"><?= $info['line1']; ?></a>
+                                        </p>
+                                    <?php else: ?>
+                                        <p class="contact-info-text mb-0 fw-semibold text-dark"><?= $info['line1']; ?></p>
+                                    <?php endif; ?>
                                     <p class="contact-info-subtext mb-0 text-muted small"><?= $info['line2']; ?></p>
                                 </div>
                             </div>
@@ -69,7 +77,19 @@ $contactDetails = [
             <!-- Right Column: Contact Form -->
             <div class="col-lg-7 contact-form-col">
                 <div class="contact-form-wrapper card p-4 p-md-5 h-100">
-                    <form class="contact-form" onsubmit="event.preventDefault();" novalidate>
+                    <div class="alert alert-success alert-dismissible fade show d-none align-items-center gap-2 shadow-sm mb-3" id="homeContactSuccessAlert" role="alert">
+                        <i class="bi bi-check-circle-fill fs-5 text-success"></i>
+                        <div><strong>Mahadsanid!</strong> Fariintaada si guul leh ayaa loo diray. Kooxdayadu way kula soo xidhiidhi doonaan.</div>
+                        <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                    <div class="alert alert-danger alert-dismissible fade show d-none align-items-center gap-2 shadow-sm mb-3" id="homeContactErrorAlert" role="alert">
+                        <i class="bi bi-exclamation-triangle-fill fs-5 text-danger"></i>
+                        <div id="homeContactErrorText">Fadlan buuxi meelaha loo baahan yahay (Magaca, Email-ka, iyo Fariinta).</div>
+                        <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+
+                    <form class="contact-form" id="homeContactForm" method="POST" action="contact.php" novalidate>
+                        <?= function_exists('csrfField') ? csrfField() : ''; ?>
                         <div class="row g-3">
                             <!-- Full Name -->
                             <div class="col-12 col-md-6 contact-form-group">
@@ -77,7 +97,7 @@ $contactDetails = [
                                 <input type="text" 
                                        class="form-control contact-form-input" 
                                        id="contact_name" 
-                                       name="name" 
+                                       name="fullName" 
                                        placeholder="Enter your full name" 
                                        required>
                             </div>
@@ -95,7 +115,7 @@ $contactDetails = [
 
                             <!-- Phone Number -->
                             <div class="col-12 col-md-6 contact-form-group">
-                                <label for="contact_phone" class="form-label contact-form-label">Phone Number</label>
+                                <label for="contact_phone" class="form-label contact-form-label">Phone Number <span class="text-muted fw-normal">(Optional)</span></label>
                                 <input type="tel" 
                                        class="form-control contact-form-input" 
                                        id="contact_phone" 
@@ -105,13 +125,12 @@ $contactDetails = [
 
                             <!-- Subject -->
                             <div class="col-12 col-md-6 contact-form-group">
-                                <label for="contact_subject" class="form-label contact-form-label">Subject <span class="text-danger">*</span></label>
+                                <label for="contact_subject" class="form-label contact-form-label">Subject <span class="text-muted fw-normal">(Optional)</span></label>
                                 <input type="text" 
                                        class="form-control contact-form-input" 
                                        id="contact_subject" 
                                        name="subject" 
-                                       placeholder="What is this about?" 
-                                       required>
+                                       placeholder="What is this about?">
                             </div>
 
                             <!-- Message -->
@@ -125,11 +144,11 @@ $contactDetails = [
                                           required></textarea>
                             </div>
 
-                            <!-- Submit Button (Frontend UI Only) -->
+                            <!-- Submit Button -->
                             <div class="col-12 pt-2">
                                 <button type="submit" 
                                         class="btn btn-contact-submit w-100 d-inline-flex align-items-center justify-content-center gap-2"
-                                        title="Send message (Demo UI)">
+                                        id="btnHomeContactSubmit">
                                     <span>Send Message</span>
                                     <i class="bi bi-send"></i>
                                 </button>

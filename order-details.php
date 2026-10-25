@@ -30,9 +30,9 @@ $paymentTxn = $order ? dbGetPaymentForOrder($order['id']) : null;
 
 // Authoritative restaurant contact
 $restName = dbGetSetting('restaurant_name', 'FastBite Fast Food');
-$restPhone = dbGetSetting('restaurant_phone', '+252 63 444 5555');
-$restEmail = dbGetSetting('restaurant_email', 'support@fastbite.com');
-$restAddress = dbGetSetting('restaurant_address', 'Main Hospitality Blvd, City Center, Hargeisa');
+$restPhone = dbGetSetting('restaurant_phone', '+252 90 761 9928');
+$restEmail = dbGetSetting('restaurant_email', 'yaasmiin378@gmail.com');
+$restAddress = dbGetSetting('restaurant_address', 'City Center, Bosaso');
 
 $successMsg = $_GET['msg'] ?? '';
 $errorMsg = $_GET['error'] ?? '';

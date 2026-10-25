@@ -564,6 +564,17 @@ function initDatabaseSchema(PDO $pdo) {
         INDEX `idx_sm_created` (`created_at`)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
 
+    // 22. Password Resets Table
+    $pdo->exec("CREATE TABLE IF NOT EXISTS `password_resets` (
+        `id` INT AUTO_INCREMENT PRIMARY KEY,
+        `email` VARCHAR(150) NOT NULL,
+        `token` VARCHAR(100) NOT NULL,
+        `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+        `expires_at` DATETIME NOT NULL,
+        INDEX `idx_pwd_reset_email` (`email`),
+        INDEX `idx_pwd_reset_token` (`token`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+
     seedDefaultCoupons($pdo);
     seedDefaultReviews($pdo);
     seedDefaultDrivers($pdo);
@@ -1943,9 +1954,9 @@ function dbSaveContactMessage($data) {
 function seedDefaultSettings(PDO $pdo) {
     $defaultSettings = [
         'restaurant_name' => 'FastBite Fast Food',
-        'restaurant_phone' => '+252 63 444 5555',
-        'restaurant_email' => 'support@fastbite.com',
-        'restaurant_address' => 'Main Hospitality Blvd, City Center, Hargeisa',
+        'restaurant_phone' => '+252 90 761 9928',
+        'restaurant_email' => 'yaasmiin378@gmail.com',
+        'restaurant_address' => 'City Center, Bosaso',
         'opening_time' => '10:00 AM',
         'closing_time' => '11:00 PM',
         'delivery_fee' => '2.00',
@@ -2860,6 +2871,127 @@ function dbResetUserPassword($userId, $newPassword, $adminId) {
     $updateStmt->execute([$hashedPassword, $userId]);
 
     dbLogSecurityEvent('admin_password_reset', "Admin #$adminId securely reset password for user #$userId ({$user['email']})", $userId, $adminId);
+
+    return ['success' => true];
+}
+
+/**
+ * Creates a secure password reset token for self-service customer password recovery.
+ *
+ * @param string $email
+ * @return array
+ */
+function dbCreatePasswordResetToken($email) {
+    $pdo = getDbConnection();
+    $email = strtolower(trim($email));
+
+    if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        return ['success' => false, 'error' => 'Please enter a valid email address.'];
+    }
+
+    $stmt = $pdo->prepare("SELECT * FROM `users` WHERE `email` = ? LIMIT 1");
+    $stmt->execute([$email]);
+    $user = $stmt->fetch();
+
+    if (!$user) {
+        return ['success' => false, 'error' => 'No account found with this email address.'];
+    }
+
+    if ($user['status'] !== 'active') {
+        return ['success' => false, 'error' => 'This account has been deactivated or suspended. Please contact support.'];
+    }
+
+    $token = bin2hex(random_bytes(32));
+    $expiresAt = date('Y-m-d H:i:s', time() + 3600); // 1 hour expiration
+
+    // Invalidate old tokens for this email
+    $del = $pdo->prepare("DELETE FROM `password_resets` WHERE `email` = ?");
+    $del->execute([$email]);
+
+    // Insert new reset token with 1 hour expiration using database time
+    $ins = $pdo->prepare("INSERT INTO `password_resets` (`email`, `token`, `expires_at`) VALUES (?, ?, DATE_ADD(NOW(), INTERVAL 1 HOUR))");
+    $ins->execute([$email, $token]);
+
+    if (function_exists('dbLogSecurityEvent')) {
+        dbLogSecurityEvent('password_reset_requested', "Password reset token requested for {$email}", $user['id']);
+    }
+
+    return [
+        'success' => true,
+        'token' => $token,
+        'user' => $user
+    ];
+}
+
+/**
+ * Verifies a customer password reset token.
+ *
+ * @param string $token
+ * @return array
+ */
+function dbVerifyPasswordResetToken($token) {
+    $pdo = getDbConnection();
+    $token = trim($token);
+
+    if (empty($token) || strlen($token) < 20) {
+        return ['valid' => false, 'error' => 'Invalid password reset token.'];
+    }
+
+    $stmt = $pdo->prepare("SELECT * FROM `password_resets` WHERE `token` = ? AND `expires_at` > NOW() ORDER BY `id` DESC LIMIT 1");
+    $stmt->execute([$token]);
+    $reset = $stmt->fetch();
+
+    if (!$reset) {
+        return ['valid' => false, 'error' => 'This password reset link has expired or is invalid. Please request a new link.'];
+    }
+
+    $userStmt = $pdo->prepare("SELECT * FROM `users` WHERE `email` = ? LIMIT 1");
+    $userStmt->execute([$reset['email']]);
+    $user = $userStmt->fetch();
+
+    if (!$user) {
+        return ['valid' => false, 'error' => 'The user account associated with this token no longer exists.'];
+    }
+
+    return [
+        'valid' => true,
+        'email' => $reset['email'],
+        'user' => $user,
+        'expires_at' => $reset['expires_at']
+    ];
+}
+
+/**
+ * Resets user password using a verified token.
+ *
+ * @param string $token
+ * @param string $newPassword
+ * @return array
+ */
+function dbResetPasswordWithToken($token, $newPassword) {
+    $verification = dbVerifyPasswordResetToken($token);
+    if (!$verification['valid']) {
+        return ['success' => false, 'error' => $verification['error']];
+    }
+
+    if (strlen($newPassword) < 6) {
+        return ['success' => false, 'error' => 'Password must be at least 6 characters long.'];
+    }
+
+    $user = $verification['user'];
+    $pdo = getDbConnection();
+
+    $hashedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
+    $updateStmt = $pdo->prepare("UPDATE `users` SET `password` = ?, `updated_at` = NOW() WHERE `id` = ?");
+    $updateStmt->execute([$hashedPassword, $user['id']]);
+
+    // Delete used reset tokens
+    $del = $pdo->prepare("DELETE FROM `password_resets` WHERE `email` = ?");
+    $del->execute([$user['email']]);
+
+    if (function_exists('dbLogSecurityEvent')) {
+        dbLogSecurityEvent('password_reset_success', "User #{$user['id']} ({$user['email']}) reset their password via token", $user['id']);
+    }
 
     return ['success' => true];
 }

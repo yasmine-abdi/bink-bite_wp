@@ -441,24 +441,21 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const forgotForm = document.getElementById('forgotForm');
-    const forgotDemoNotice = document.getElementById('forgotDemoNotice');
     if (forgotForm) {
         forgotForm.addEventListener('submit', (e) => {
-            e.preventDefault();
+            const emailInput = document.getElementById('forgotEmail');
+            const submitBtn = document.getElementById('btnForgotSubmit');
 
-            if (!forgotForm.checkValidity()) {
+            if (!emailInput || !emailInput.value.trim() || !forgotForm.checkValidity()) {
+                e.preventDefault();
                 e.stopPropagation();
                 forgotForm.classList.add('was-validated');
                 return;
             }
 
-            forgotForm.classList.add('was-validated');
-
-            if (forgotDemoNotice) {
-                forgotDemoNotice.classList.remove('d-none');
-                setTimeout(() => {
-                    forgotDemoNotice.classList.add('d-none');
-                }, 4000);
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status"></span> Generating Link...';
             }
         });
     }
@@ -2222,7 +2219,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
-        customerContactForm.addEventListener('submit', (e) => {
+        customerContactForm.addEventListener('submit', function(e) {
             e.preventDefault();
 
             let isValid = true;
@@ -2250,14 +2247,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 setFieldStatus(inputEmail, emailFeedback, true);
             }
 
-            // 3. Subject (Required)
+            // 3. Subject (Optional)
             const subjectVal = inputSubject ? inputSubject.value.trim() : '';
-            const subjectFeedback = document.getElementById('subjectFeedback');
-            if (!subjectVal) {
-                setFieldStatus(inputSubject, subjectFeedback, false, 'Please enter a subject.');
-                isValid = false;
-            } else {
-                setFieldStatus(inputSubject, subjectFeedback, true);
+            if (inputSubject) {
+                setFieldStatus(inputSubject, document.getElementById('subjectFeedback'), true);
             }
 
             // 4. Message (Required)
@@ -2271,42 +2264,154 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             if (isValid) {
-                // Button loading animation
                 if (btnSubmit) {
                     const origBtnHtml = btnSubmit.innerHTML;
                     btnSubmit.disabled = true;
                     btnSubmit.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span> Sending...';
 
-                    setTimeout(() => {
+                    const formData = new FormData(customerContactForm);
+                    if (!formData.get('subject')) {
+                        formData.set('subject', 'General Inquiry');
+                    }
+
+                    fetch('contact.php', {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Accept': 'application/json'
+                        }
+                    })
+                    .then(response => response.json().catch(() => ({ success: true })))
+                    .then(data => {
                         btnSubmit.disabled = false;
                         btnSubmit.innerHTML = origBtnHtml;
 
-                        // Show success alert
-                        if (contactSuccessAlert) {
-                            contactSuccessAlert.classList.remove('d-none');
-                            contactSuccessAlert.classList.add('d-flex');
-                            contactSuccessAlert.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-                        }
-
-                        // Clear form fields
-                        customerContactForm.reset();
-                        [inputName, inputEmail, inputSubject, inputMessage].forEach(input => {
-                            if (input) {
-                                input.classList.remove('is-valid');
-                                input.classList.remove('is-invalid');
-                            }
-                        });
-
-                        // Auto-hide alert after 7 seconds
-                        setTimeout(() => {
+                        if (data && data.success) {
                             if (contactSuccessAlert) {
-                                contactSuccessAlert.classList.add('d-none');
-                                contactSuccessAlert.classList.remove('d-flex');
+                                contactSuccessAlert.classList.remove('d-none');
+                                contactSuccessAlert.classList.add('d-flex');
+                                contactSuccessAlert.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
                             }
-                        }, 7000);
-                    }, 400);
+                            const errAlert = document.getElementById('contactErrorAlert');
+                            if (errAlert) {
+                                errAlert.classList.add('d-none');
+                                errAlert.classList.remove('d-flex');
+                            }
+                            customerContactForm.reset();
+                            [inputName, inputEmail, inputSubject, inputMessage].forEach(input => {
+                                if (input) {
+                                    input.classList.remove('is-valid');
+                                    input.classList.remove('is-invalid');
+                                }
+                            });
+                        } else {
+                            const errAlert = document.getElementById('contactErrorAlert');
+                            const errText = document.getElementById('contactErrorAlertText');
+                            if (errAlert) {
+                                if (errText && data.message) errText.textContent = data.message;
+                                errAlert.classList.remove('d-none');
+                                errAlert.classList.add('d-flex');
+                                errAlert.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                            }
+                        }
+                    })
+                    .catch(error => {
+                        // If AJAX fails, fall back to native POST submission
+                        customerContactForm.submit();
+                    });
                 }
             }
+        });
+    }
+
+    // 23. Home Page Contact Form Handler (#homeContactForm)
+    const homeContactForm = document.getElementById('homeContactForm');
+    if (homeContactForm) {
+        homeContactForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const nameInput = document.getElementById('contact_name');
+            const emailInput = document.getElementById('contact_email');
+            const phoneInput = document.getElementById('contact_phone');
+            const subjectInput = document.getElementById('contact_subject');
+            const messageInput = document.getElementById('contact_message');
+            const submitBtn = document.getElementById('btnHomeContactSubmit');
+            const successAlert = document.getElementById('homeContactSuccessAlert');
+            const errorAlert = document.getElementById('homeContactErrorAlert');
+            const errorText = document.getElementById('homeContactErrorText');
+
+            const name = nameInput ? nameInput.value.trim() : '';
+            const email = emailInput ? emailInput.value.trim() : '';
+            const message = messageInput ? messageInput.value.trim() : '';
+
+            if (!name || !email || !message) {
+                if (errorAlert) {
+                    if (errorText) errorText.textContent = 'Fadlan buuxi Magaca, Email-ka, iyo Fariinta.';
+                    errorAlert.classList.remove('d-none');
+                    errorAlert.classList.add('d-flex');
+                }
+                if (successAlert) successAlert.classList.add('d-none');
+                return;
+            }
+
+            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                if (errorAlert) {
+                    if (errorText) errorText.textContent = 'Fadlan geli email sax ah.';
+                    errorAlert.classList.remove('d-none');
+                    errorAlert.classList.add('d-flex');
+                }
+                if (successAlert) successAlert.classList.add('d-none');
+                return;
+            }
+
+            if (errorAlert) errorAlert.classList.add('d-none');
+
+            const originalBtnHtml = submitBtn ? submitBtn.innerHTML : '';
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status"></span> Sending...';
+            }
+
+            const formData = new FormData(homeContactForm);
+            if (!formData.get('subject')) {
+                formData.set('subject', 'General Inquiry');
+            }
+
+            fetch('contact.php', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json'
+                }
+            })
+            .then(res => res.json().catch(() => ({ success: true })))
+            .then(data => {
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalBtnHtml;
+                }
+                if (data && data.success) {
+                    if (successAlert) {
+                        successAlert.classList.remove('d-none');
+                        successAlert.classList.add('d-flex');
+                        successAlert.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                    }
+                    if (errorAlert) errorAlert.classList.add('d-none');
+                    homeContactForm.reset();
+                } else {
+                    if (errorAlert) {
+                        if (errorText && data.message) errorText.textContent = data.message;
+                        errorAlert.classList.remove('d-none');
+                        errorAlert.classList.add('d-flex');
+                    }
+                }
+            })
+            .catch(() => {
+                // Fall back to native submission
+                homeContactForm.submit();
+            });
         });
     }
 

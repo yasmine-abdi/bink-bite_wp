@@ -22,21 +22,51 @@ $bannerImage = function_exists('getBannerImage') ? getBannerImage('contact-banne
 
 $contactSuccess = false;
 $contactError = '';
-if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST' && !empty($_POST['fullName'])) {
+$restaurantPhone = function_exists('dbGetSetting') ? dbGetSetting('restaurant_phone', '+252 90 761 9928') : '+252 90 761 9928';
+
+if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST' && (!empty($_POST['fullName']) || !empty($_POST['name']))) {
     $csrf = $_POST['csrf_token'] ?? '';
     if (!verifyCsrfToken($csrf)) {
-        $contactError = 'Security validation failed. Please try again.';
+        $contactError = 'Security validation failed. Please refresh the page and try again.';
     } else {
-        $saved = dbSaveContactMessage([
-            'name' => trim($_POST['fullName'] ?? ''),
-            'email' => trim($_POST['email'] ?? ''),
-            'phone' => trim($_POST['phone'] ?? ''),
-            'subject' => trim($_POST['subject'] ?? ''),
-            'message' => trim($_POST['message'] ?? '')
-        ]);
-        if ($saved) {
-            $contactSuccess = true;
+        $name = trim($_POST['fullName'] ?? $_POST['name'] ?? '');
+        $email = trim($_POST['email'] ?? '');
+        $phone = trim($_POST['phone'] ?? '');
+        $subject = trim($_POST['subject'] ?? '');
+        if (empty($subject)) {
+            $subject = 'General Inquiry';
         }
+        $message = trim($_POST['message'] ?? '');
+
+        if (empty($name) || empty($email) || empty($message)) {
+            $contactError = 'Please fill in all required fields (Name, Email, and Message).';
+        } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $contactError = 'Please enter a valid email address.';
+        } else {
+            $saved = dbSaveContactMessage([
+                'name' => $name,
+                'email' => $email,
+                'phone' => $phone,
+                'subject' => $subject,
+                'message' => $message
+            ]);
+            if ($saved) {
+                $contactSuccess = true;
+            } else {
+                $contactError = 'Unable to send message right now. Please try again.';
+            }
+        }
+    }
+
+    $isAjax = (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest')
+              || (isset($_SERVER['HTTP_ACCEPT']) && strpos($_SERVER['HTTP_ACCEPT'], 'application/json') !== false);
+    if ($isAjax) {
+        header('Content-Type: application/json');
+        echo json_encode([
+            'success' => $contactSuccess,
+            'message' => $contactSuccess ? 'Thank you! Your message has been received.' : $contactError
+        ]);
+        exit;
     }
 }
 ?>
@@ -115,8 +145,8 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST' && !empty($_POST['fullName'
                                             </div>
                                             <div>
                                                 <h2 class="h6 fw-bold text-dark mb-1">Call Us</h2>
-                                                <a href="tel:+252630000000" class="d-block fw-bold text-primary-accent text-decoration-none mb-1">
-                                                    +252 63 000 0000
+                                                <a href="tel:+252907619928" class="d-block fw-bold text-primary-accent text-decoration-none mb-1">
+                                                    +252 90 761 9928
                                                 </a>
                                                 <span class="text-muted extra-small">Available 10:00 AM — 11:00 PM Daily</span>
                                             </div>
@@ -124,7 +154,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST' && !empty($_POST['fullName'
                                     </div>
                                 </div>
 
-                                <!-- Card 3: Email Us -->
+                                 <!-- Card 3: Email Us -->
                                 <div class="col-12 col-sm-6 col-lg-12">
                                     <div class="card h-100 border-0 shadow-sm p-3 p-md-4 contact-card">
                                         <div class="d-flex align-items-start gap-3">
@@ -133,8 +163,8 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST' && !empty($_POST['fullName'
                                             </div>
                                             <div>
                                                 <h2 class="h6 fw-bold text-dark mb-1">Email Us</h2>
-                                                <a href="mailto:support@fastbite.com" class="d-block fw-bold text-primary-accent text-decoration-none mb-1">
-                                                    support@fastbite.com
+                                                <a href="mailto:yaasmiin378@gmail.com" class="d-block fw-bold text-primary-accent text-decoration-none mb-1">
+                                                    yaasmiin378@gmail.com
                                                 </a>
                                                 <span class="text-muted extra-small">Expect a response within 24 hours</span>
                                             </div>
@@ -151,7 +181,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST' && !empty($_POST['fullName'
                                             </div>
                                             <div>
                                                 <h2 class="h6 fw-bold text-dark mb-1">Visit Us</h2>
-                                                <p class="fw-semibold text-dark mb-0">City Center, Hargeisa</p>
+                                                <p class="fw-semibold text-dark mb-0">City Center, Bosaso</p>
                                                 <span class="text-muted extra-small">Dine-in &bull; Takeaway &bull; Drive-thru</span>
                                             </div>
                                         </div>
@@ -192,8 +222,8 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST' && !empty($_POST['fullName'
                                     <div class="rounded-circle bg-pink-soft text-primary-accent p-3 mb-2 shadow-sm">
                                         <i class="bi bi-geo-alt-fill fs-2"></i>
                                     </div>
-                                    <h3 class="h6 fw-bold text-dark mb-1">FastBite — City Center, Hargeisa</h3>
-                                    <p class="text-muted extra-small mb-2">Main Hospitality Boulevard, City Center</p>
+                                    <h3 class="h6 fw-bold text-dark mb-1">FastBite — City Center, Bosaso</h3>
+                                    <p class="text-muted extra-small mb-2">Main Street, City Center, Bosaso</p>
                                     <span class="badge bg-white text-primary-accent border border-pink-subtle extra-small">
                                         <i class="bi bi-clock me-1"></i>Open Daily 10:00 AM — 11:00 PM
                                     </span>
@@ -222,10 +252,24 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST' && !empty($_POST['fullName'
                                     <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" aria-label="Close"></button>
                                 </div>
                             <?php endif; ?>
+                            <?php if (!empty($contactError)): ?>
+                                <div class="alert alert-danger alert-dismissible fade show d-flex align-items-center gap-2 shadow-sm mb-4" role="alert">
+                                    <i class="bi bi-exclamation-triangle-fill fs-5 text-danger"></i>
+                                    <div><?= htmlspecialchars($contactError); ?></div>
+                                    <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" aria-label="Close"></button>
+                                </div>
+                            <?php endif; ?>
                             <div class="alert alert-success alert-dismissible fade show d-none align-items-center gap-2 shadow-sm mb-4" id="contactSuccessAlert" role="alert">
                                 <i class="bi bi-check-circle-fill fs-5 text-success"></i>
                                 <div>
                                     <strong>Thank you!</strong> Your message has been received. Our team will contact you shortly.
+                                </div>
+                                <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                            <div class="alert alert-danger alert-dismissible fade show d-none align-items-center gap-2 shadow-sm mb-4" id="contactErrorAlert" role="alert">
+                                <i class="bi bi-exclamation-triangle-fill fs-5 text-danger"></i>
+                                <div id="contactErrorAlertText">
+                                    An error occurred while sending your message.
                                 </div>
                                 <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" aria-label="Close"></button>
                             </div>
@@ -266,18 +310,18 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST' && !empty($_POST['fullName'
                                         </label>
                                         <div class="input-group">
                                             <span class="input-group-text bg-light border-end-0"><i class="bi bi-telephone text-muted"></i></span>
-                                            <input type="tel" class="form-control border-start-0 ps-0" id="contactPhone" name="phone" placeholder="e.g. +252 63 000 0000">
+                                            <input type="tel" class="form-control border-start-0 ps-0" id="contactPhone" name="phone" placeholder="e.g. +252 90 761 9928">
                                         </div>
                                     </div>
 
-                                    <!-- Subject (Required) -->
+                                    <!-- Subject (Optional) -->
                                     <div class="col-12 col-md-6">
                                         <label for="contactSubject" class="form-label small fw-bold text-dark">
-                                            Subject <span class="text-danger">*</span>
+                                            Subject <span class="text-muted fw-normal">(Optional)</span>
                                         </label>
                                         <div class="input-group">
                                             <span class="input-group-text bg-light border-end-0"><i class="bi bi-chat-left-text text-muted"></i></span>
-                                            <input type="text" class="form-control border-start-0 ps-0" id="contactSubject" name="subject" placeholder="e.g. Order Inquiry / Feedback" required>
+                                            <input type="text" class="form-control border-start-0 ps-0" id="contactSubject" name="subject" placeholder="What is this about? (Optional)">
                                         </div>
                                         <div class="invalid-feedback" id="subjectFeedback">Please enter a subject.</div>
                                     </div>
@@ -371,7 +415,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST' && !empty($_POST['fullName'
                         </h3>
                         <div id="faqCollapseFour" class="accordion-collapse collapse" aria-labelledby="faqHeadingFour" data-bs-parent="#contactFaqAccordion">
                             <div class="accordion-body text-muted small pt-0 pb-3">
-                                Orders can be modified or cancelled before the kitchen begins preparing your food. Contact our support line immediately at <a href="tel:+252630000000" class="text-primary-accent fw-bold text-decoration-none">+252 63 000 0000</a> if you need changes.
+                                Orders can be modified or cancelled before the kitchen begins preparing your food. Contact our support line immediately at <a href="tel:+252907619928" class="text-primary-accent fw-bold text-decoration-none">+252 90 761 9928</a> if you need changes.
                             </div>
                         </div>
                     </div>
@@ -385,7 +429,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST' && !empty($_POST['fullName'
                         </h3>
                         <div id="faqCollapseFive" class="accordion-collapse collapse" aria-labelledby="faqHeadingFive" data-bs-parent="#contactFaqAccordion">
                             <div class="accordion-body text-muted small pt-0 pb-3">
-                                You can reach our friendly support team via phone at <a href="tel:+252630000000" class="text-primary-accent fw-bold text-decoration-none">+252 63 000 0000</a>, email at <a href="mailto:support@fastbite.com" class="text-primary-accent fw-bold text-decoration-none">support@fastbite.com</a>, or using the contact form on this page.
+                                You can reach our friendly support team via phone at <a href="tel:+252907619928" class="text-primary-accent fw-bold text-decoration-none">+252 90 761 9928</a>, email at <a href="mailto:yaasmiin378@gmail.com" class="text-primary-accent fw-bold text-decoration-none">yaasmiin378@gmail.com</a>, or using the contact form on this page.
                             </div>
                         </div>
                     </div>

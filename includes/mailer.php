@@ -205,9 +205,9 @@ function getFastBiteBaseUrl() {
  */
 function getFastBiteReceiptEmailHtml($order, $customer = null) {
     $restName = function_exists('dbGetSetting') ? dbGetSetting('restaurant_name', 'FastBite Fast Food') : 'FastBite Fast Food';
-    $restPhone = function_exists('dbGetSetting') ? dbGetSetting('restaurant_phone', '+252 63 444 5555') : '+252 63 444 5555';
-    $restEmail = function_exists('dbGetSetting') ? dbGetSetting('restaurant_email', 'support@fastbite.com') : 'support@fastbite.com';
-    $restAddress = function_exists('dbGetSetting') ? dbGetSetting('restaurant_address', 'Main Hospitality Blvd, City Center, Hargeisa') : 'Main Hospitality Blvd, City Center, Hargeisa';
+    $restPhone = function_exists('dbGetSetting') ? dbGetSetting('restaurant_phone', '+252 90 761 9928') : '+252 90 761 9928';
+    $restEmail = function_exists('dbGetSetting') ? dbGetSetting('restaurant_email', 'yaasmiin378@gmail.com') : 'yaasmiin378@gmail.com';
+    $restAddress = function_exists('dbGetSetting') ? dbGetSetting('restaurant_address', 'City Center, Bosaso') : 'City Center, Bosaso';
 
     $orderNumber = htmlspecialchars($order['order_number'] ?? 'N/A', ENT_QUOTES, 'UTF-8');
     $customerName = htmlspecialchars($customer['name'] ?? $order['customer_name'] ?? 'Valued Customer', ENT_QUOTES, 'UTF-8');
@@ -455,4 +455,92 @@ function sendFastBiteOrderReceiptEmail($order, $customer = null) {
 
     return sendFastBiteEmail($toEmail, $toName, $subject, $htmlBody);
 }
+
+/**
+ * Dispatches a password reset email with secure token link.
+ * 
+ * @param string $toEmail
+ * @param string $toName
+ * @param string $resetUrl
+ * @return array ['success' => bool, 'sent' => bool, 'reason' => string]
+ */
+function sendPasswordResetEmail($toEmail, $toName, $resetUrl) {
+    $toEmail = trim($toEmail);
+    $toName = trim($toName) ?: 'Valued Customer';
+
+    if (empty($toEmail) || !filter_var($toEmail, FILTER_VALIDATE_EMAIL)) {
+        return [
+            'success' => false,
+            'sent' => false,
+            'reason' => 'Recipient email address is invalid.'
+        ];
+    }
+
+    $subject = "Reset Your FastBite Password";
+    $safeName = htmlspecialchars($toName, ENT_QUOTES, 'UTF-8');
+    $safeUrl = htmlspecialchars($resetUrl, ENT_QUOTES, 'UTF-8');
+    $restPhone = function_exists('dbGetSetting') ? dbGetSetting('restaurant_phone', '+252 90 761 9928') : '+252 90 761 9928';
+
+    $htmlBody = <<<HTML
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Reset Your Password</title>
+</head>
+<body style="margin: 0; padding: 0; background-color: #f8f9fa; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #212529;">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color: #f8f9fa; padding: 30px 15px;">
+        <tr>
+            <td align="center">
+                <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width: 560px; background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 16px rgba(0,0,0,0.06); border: 1px solid #f0f0f0;">
+                    <!-- Brand Header -->
+                    <tr>
+                        <td style="background-color: #ff2b54; padding: 25px 30px; text-align: center;">
+                            <h1 style="margin: 0; color: #ffffff; font-size: 24px; font-weight: 800; letter-spacing: -0.5px;">FastBite Fast Food</h1>
+                            <p style="margin: 4px 0 0 0; color: rgba(255,255,255,0.85); font-size: 13px;">Account Security &amp; Password Recovery</p>
+                        </td>
+                    </tr>
+                    <!-- Content -->
+                    <tr>
+                        <td style="padding: 35px 30px;">
+                            <h2 style="margin: 0 0 15px 0; color: #111827; font-size: 20px; font-weight: 700;">Hello {$safeName},</h2>
+                            <p style="margin: 0 0 20px 0; color: #4b5563; font-size: 15px; line-height: 1.6;">
+                                We received a request to reset the password for your FastBite account. Click the button below to choose a new password:
+                            </p>
+                            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin: 25px 0;">
+                                <tr>
+                                    <td align="center">
+                                        <a href="{$safeUrl}" target="_blank" style="display: inline-block; background-color: #ff2b54; color: #ffffff; text-decoration: none; padding: 14px 32px; border-radius: 8px; font-weight: 700; font-size: 15px; box-shadow: 0 4px 12px rgba(255,43,84,0.35);">
+                                            Reset My Password
+                                        </a>
+                                    </td>
+                                </tr>
+                            </table>
+                            <p style="margin: 20px 0 10px 0; color: #6b7280; font-size: 13px; line-height: 1.5;">
+                                This password reset link will expire in <strong>60 minutes</strong>. If you did not make this request, you can safely ignore this email and your password will remain unchanged.
+                            </p>
+                            <div style="margin-top: 25px; padding-top: 20px; border-top: 1px solid #e5e7eb; word-break: break-all; color: #9ca3af; font-size: 12px;">
+                                If the button above doesn't work, copy and paste this URL into your browser:<br>
+                                <a href="{$safeUrl}" style="color: #ff2b54; text-decoration: underline;">{$safeUrl}</a>
+                            </div>
+                        </td>
+                    </tr>
+                    <!-- Footer -->
+                    <tr>
+                        <td style="background-color: #fdf2f4; padding: 20px 30px; text-align: center; border-top: 1px solid #fee2e7;">
+                            <p style="margin: 0 0 5px 0; color: #9f1239; font-size: 12px; font-weight: 600;">FastBite Support &bull; Tel: {$restPhone}</p>
+                            <p style="margin: 0; color: #9ca3af; font-size: 11px;">&copy; 2026 FastBite Fast Food. All rights reserved.</p>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>
+HTML;
+
+    return sendFastBiteEmail($toEmail, $toName, $subject, $htmlBody);
+}
+
 
