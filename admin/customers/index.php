@@ -119,42 +119,42 @@ $customers = array_slice($allFilteredCustomers, $offset, $perPage);
         <!-- 6 KPI Metric Cards -->
         <div class="row g-3 mb-4">
             <div class="col-6 col-md-4 col-xl-2">
-                <div class="card p-3 border-0 bg-white shadow-sm h-100 rounded-3 stat-hover-card">
+                <div class="card p-3 border-0 bg-white shadow-sm h-100 rounded-4 stat-hover-card border-start border-4 border-dark">
                     <span class="text-muted extra-small text-uppercase fw-bold">Total</span>
                     <div class="h3 fw-bold text-dark my-1"><?= $metrics['total']; ?></div>
                     <span class="extra-small text-muted">All registered</span>
                 </div>
             </div>
             <div class="col-6 col-md-4 col-xl-2">
-                <div class="card p-3 border-0 bg-white shadow-sm h-100 rounded-3 stat-hover-card">
+                <div class="card p-3 border-0 bg-white shadow-sm h-100 rounded-4 stat-hover-card border-start border-4 border-success">
                     <span class="text-muted extra-small text-uppercase fw-bold">Active</span>
                     <div class="h3 fw-bold text-success my-1"><?= $metrics['active']; ?></div>
                     <span class="extra-small text-muted">Permitted to log in</span>
                 </div>
             </div>
             <div class="col-6 col-md-4 col-xl-2">
-                <div class="card p-3 border-0 bg-white shadow-sm h-100 rounded-3 stat-hover-card">
+                <div class="card p-3 border-0 bg-white shadow-sm h-100 rounded-4 stat-hover-card border-start border-4 border-danger">
                     <span class="text-muted extra-small text-uppercase fw-bold">Inactive</span>
                     <div class="h3 fw-bold text-danger my-1"><?= $metrics['inactive']; ?></div>
                     <span class="extra-small text-muted">Access suspended</span>
                 </div>
             </div>
             <div class="col-6 col-md-4 col-xl-2">
-                <div class="card p-3 border-0 bg-white shadow-sm h-100 rounded-3 stat-hover-card">
+                <div class="card p-3 border-0 bg-white shadow-sm h-100 rounded-4 stat-hover-card border-start border-4 border-primary">
                     <span class="text-muted extra-small text-uppercase fw-bold">New Today</span>
                     <div class="h3 fw-bold text-primary my-1">+<?= $metrics['new_today']; ?></div>
                     <span class="extra-small text-muted">Joined today</span>
                 </div>
             </div>
             <div class="col-6 col-md-4 col-xl-2">
-                <div class="card p-3 border-0 bg-white shadow-sm h-100 rounded-3 stat-hover-card">
+                <div class="card p-3 border-0 bg-white shadow-sm h-100 rounded-4 stat-hover-card border-start border-4 border-info">
                     <span class="text-muted extra-small text-uppercase fw-bold">With Orders</span>
                     <div class="h3 fw-bold text-info my-1"><?= $metrics['with_orders']; ?></div>
                     <span class="extra-small text-muted">Active buyers</span>
                 </div>
             </div>
             <div class="col-6 col-md-4 col-xl-2">
-                <div class="card p-3 border-0 bg-white shadow-sm h-100 rounded-3 stat-hover-card">
+                <div class="card p-3 border-0 bg-white shadow-sm h-100 rounded-4 stat-hover-card border-start border-4 border-secondary">
                     <span class="text-muted extra-small text-uppercase fw-bold">No Orders</span>
                     <div class="h3 fw-bold text-secondary my-1"><?= $metrics['without_orders']; ?></div>
                     <span class="extra-small text-muted">Zero orders yet</span>

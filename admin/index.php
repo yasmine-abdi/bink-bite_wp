@@ -57,7 +57,7 @@ $activeDiscounts = dbGetAllDiscounts(['status' => 'active']);
             
             <!-- 1. Total Revenue -->
             <div class="col-6 col-lg-3">
-                <div class="card p-3 border-0 bg-white shadow-sm h-100 rounded-3 stat-hover-card">
+                <div class="card p-3 border-0 bg-white shadow-sm h-100 rounded-4 stat-hover-card border-start border-4 border-danger">
                     <div class="d-flex align-items-center justify-content-between mb-2">
                         <span class="text-muted extra-small text-uppercase fw-bold">Total Revenue</span>
                         <div class="stat-icon-wrap bg-pink-soft text-primary-accent rounded-circle d-flex align-items-center justify-content-center" style="width: 38px; height: 38px;">
@@ -74,7 +74,7 @@ $activeDiscounts = dbGetAllDiscounts(['status' => 'active']);
 
             <!-- 2. Today's Revenue -->
             <div class="col-6 col-lg-3">
-                <div class="card p-3 border-0 bg-white shadow-sm h-100 rounded-3 stat-hover-card">
+                <div class="card p-3 border-0 bg-white shadow-sm h-100 rounded-4 stat-hover-card border-start border-4 border-success">
                     <div class="d-flex align-items-center justify-content-between mb-2">
                         <span class="text-muted extra-small text-uppercase fw-bold">Today's Sales</span>
                         <div class="stat-icon-wrap bg-success-subtle text-success rounded-circle d-flex align-items-center justify-content-center" style="width: 38px; height: 38px;">
@@ -91,7 +91,7 @@ $activeDiscounts = dbGetAllDiscounts(['status' => 'active']);
 
             <!-- 3. Total Orders -->
             <div class="col-6 col-lg-3">
-                <div class="card p-3 border-0 bg-white shadow-sm h-100 rounded-3 stat-hover-card">
+                <div class="card p-3 border-0 bg-white shadow-sm h-100 rounded-4 stat-hover-card border-start border-4 border-primary">
                     <div class="d-flex align-items-center justify-content-between mb-2">
                         <span class="text-muted extra-small text-uppercase fw-bold">Total Orders</span>
                         <div class="stat-icon-wrap bg-primary-subtle text-primary rounded-circle d-flex align-items-center justify-content-center" style="width: 38px; height: 38px;">
@@ -107,7 +107,7 @@ $activeDiscounts = dbGetAllDiscounts(['status' => 'active']);
 
             <!-- 4. Today's Orders -->
             <div class="col-6 col-lg-3">
-                <div class="card p-3 border-0 bg-white shadow-sm h-100 rounded-3 stat-hover-card">
+                <div class="card p-3 border-0 bg-white shadow-sm h-100 rounded-4 stat-hover-card border-start border-4 border-info">
                     <div class="d-flex align-items-center justify-content-between mb-2">
                         <span class="text-muted extra-small text-uppercase fw-bold">Today's Orders</span>
                         <div class="stat-icon-wrap bg-info-subtle text-info rounded-circle d-flex align-items-center justify-content-center" style="width: 38px; height: 38px;">
@@ -124,7 +124,7 @@ $activeDiscounts = dbGetAllDiscounts(['status' => 'active']);
 
             <!-- 5. Pending Orders -->
             <div class="col-6 col-lg-3">
-                <div class="card p-3 border-0 bg-white shadow-sm h-100 rounded-3 stat-hover-card <?= ($stats['pending_orders'] > 0) ? 'border-start border-danger border-4' : ''; ?>">
+                <div class="card p-3 border-0 bg-white shadow-sm h-100 rounded-4 stat-hover-card border-start border-4 border-danger">
                     <div class="d-flex align-items-center justify-content-between mb-2">
                         <span class="text-muted extra-small text-uppercase fw-bold">Pending Orders</span>
                         <div class="stat-icon-wrap bg-danger-subtle text-danger rounded-circle d-flex align-items-center justify-content-center" style="width: 38px; height: 38px;">
@@ -146,7 +146,7 @@ $activeDiscounts = dbGetAllDiscounts(['status' => 'active']);
 
             <!-- 6. Total Customers -->
             <div class="col-6 col-lg-3">
-                <div class="card p-3 border-0 bg-white shadow-sm h-100 rounded-3 stat-hover-card">
+                <div class="card p-3 border-0 bg-white shadow-sm h-100 rounded-4 stat-hover-card border-start border-4 border-warning">
                     <div class="d-flex align-items-center justify-content-between mb-2">
                         <span class="text-muted extra-small text-uppercase fw-bold">Customers</span>
                         <div class="stat-icon-wrap bg-warning-subtle text-warning rounded-circle d-flex align-items-center justify-content-center" style="width: 38px; height: 38px;">
@@ -164,7 +164,7 @@ $activeDiscounts = dbGetAllDiscounts(['status' => 'active']);
 
             <!-- 7. Available Foods -->
             <div class="col-6 col-lg-3">
-                <div class="card p-3 border-0 bg-white shadow-sm h-100 rounded-3 stat-hover-card">
+                <div class="card p-3 border-0 bg-white shadow-sm h-100 rounded-4 stat-hover-card border-start border-4 border-success">
                     <div class="d-flex align-items-center justify-content-between mb-2">
                         <span class="text-muted extra-small text-uppercase fw-bold">Live Foods</span>
                         <div class="stat-icon-wrap bg-success-subtle text-success rounded-circle d-flex align-items-center justify-content-center" style="width: 38px; height: 38px;">
@@ -180,7 +180,7 @@ $activeDiscounts = dbGetAllDiscounts(['status' => 'active']);
 
             <!-- 8. Sold Out Foods -->
             <div class="col-6 col-lg-3">
-                <div class="card p-3 border-0 bg-white shadow-sm h-100 rounded-3 stat-hover-card <?= ($stats['sold_out_foods'] > 0) ? 'border-start border-warning border-4' : ''; ?>">
+                <div class="card p-3 border-0 bg-white shadow-sm h-100 rounded-4 stat-hover-card border-start border-4 <?= ($stats['sold_out_foods'] > 0) ? 'border-danger' : 'border-secondary'; ?>">
                     <div class="d-flex align-items-center justify-content-between mb-2">
                         <span class="text-muted extra-small text-uppercase fw-bold">Sold Out Items</span>
                         <div class="stat-icon-wrap bg-secondary-subtle text-secondary rounded-circle d-flex align-items-center justify-content-center" style="width: 38px; height: 38px;">

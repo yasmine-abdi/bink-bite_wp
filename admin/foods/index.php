@@ -147,7 +147,7 @@ require_once __DIR__ . '/../includes/sidebar.php';
         <!-- 5 Summary Metric Cards -->
         <div class="row g-3 mb-4">
             <div class="col-6 col-md-4 col-xl">
-                <div class="card stat-hover-card h-100 border-0 shadow-sm p-3">
+                <div class="card stat-hover-card h-100 border-0 shadow-sm p-3 rounded-4 border-start border-4 border-dark">
                     <div class="d-flex align-items-center justify-content-between">
                         <div>
                             <span class="text-muted extra-small text-uppercase fw-bold d-block">Total Foods</span>
@@ -161,7 +161,7 @@ require_once __DIR__ . '/../includes/sidebar.php';
             </div>
 
             <div class="col-6 col-md-4 col-xl">
-                <div class="card stat-hover-card h-100 border-0 shadow-sm p-3">
+                <div class="card stat-hover-card h-100 border-0 shadow-sm p-3 rounded-4 border-start border-4 border-success">
                     <div class="d-flex align-items-center justify-content-between">
                         <div>
                             <span class="text-muted extra-small text-uppercase fw-bold d-block">Available</span>
@@ -175,7 +175,7 @@ require_once __DIR__ . '/../includes/sidebar.php';
             </div>
 
             <div class="col-6 col-md-4 col-xl">
-                <div class="card stat-hover-card h-100 border-0 shadow-sm p-3">
+                <div class="card stat-hover-card h-100 border-0 shadow-sm p-3 rounded-4 border-start border-4 border-danger">
                     <div class="d-flex align-items-center justify-content-between">
                         <div>
                             <span class="text-muted extra-small text-uppercase fw-bold d-block">Sold Out</span>
@@ -189,7 +189,7 @@ require_once __DIR__ . '/../includes/sidebar.php';
             </div>
 
             <div class="col-6 col-md-4 col-xl">
-                <div class="card stat-hover-card h-100 border-0 shadow-sm p-3">
+                <div class="card stat-hover-card h-100 border-0 shadow-sm p-3 rounded-4 border-start border-4 border-warning">
                     <div class="d-flex align-items-center justify-content-between">
                         <div>
                             <span class="text-muted extra-small text-uppercase fw-bold d-block">On Discount</span>
@@ -203,7 +203,7 @@ require_once __DIR__ . '/../includes/sidebar.php';
             </div>
 
             <div class="col-12 col-md-4 col-xl">
-                <div class="card stat-hover-card h-100 border-0 shadow-sm p-3">
+                <div class="card stat-hover-card h-100 border-0 shadow-sm p-3 rounded-4 border-start border-4 border-info">
                     <div class="d-flex align-items-center justify-content-between">
                         <div>
                             <span class="text-muted extra-small text-uppercase fw-bold d-block">Categories</span>
@@ -231,7 +231,7 @@ require_once __DIR__ . '/../includes/sidebar.php';
 
                     <div class="col-6 col-md-3 col-lg-2">
                         <label for="adminCatFilter" class="form-label extra-small text-muted text-uppercase fw-bold mb-1">Category</label>
-                        <select name="category" id="adminCatFilter" class="form-select">
+                        <select name="category" id="adminCatFilter" class="form-select" onchange="this.form.submit()">
                             <option value="all">All Categories</option>
                             <?php foreach ($categories as $c): ?>
                                 <option value="<?= $c['id']; ?>" <?= ($categoryFilter == $c['id']) ? 'selected' : ''; ?>>
@@ -243,7 +243,7 @@ require_once __DIR__ . '/../includes/sidebar.php';
 
                     <div class="col-6 col-md-3 col-lg-2">
                         <label for="adminAvailFilter" class="form-label extra-small text-muted text-uppercase fw-bold mb-1">Availability</label>
-                        <select name="availability" id="adminAvailFilter" class="form-select">
+                        <select name="availability" id="adminAvailFilter" class="form-select" onchange="this.form.submit()">
                             <option value="all" <?= ($availFilter === 'all') ? 'selected' : ''; ?>>All Status</option>
                             <option value="available" <?= ($availFilter === 'available') ? 'selected' : ''; ?>>Available</option>
                             <option value="sold_out" <?= ($availFilter === 'sold_out') ? 'selected' : ''; ?>>Sold Out</option>
@@ -252,7 +252,7 @@ require_once __DIR__ . '/../includes/sidebar.php';
 
                     <div class="col-6 col-md-3 col-lg-2">
                         <label for="adminDiscFilter" class="form-label extra-small text-muted text-uppercase fw-bold mb-1">Discount</label>
-                        <select name="discount" id="adminDiscFilter" class="form-select">
+                        <select name="discount" id="adminDiscFilter" class="form-select" onchange="this.form.submit()">
                             <option value="all" <?= ($discountFilter === 'all') ? 'selected' : ''; ?>>All Pricing</option>
                             <option value="discounted" <?= ($discountFilter === 'discounted') ? 'selected' : ''; ?>>On Discount</option>
                             <option value="regular" <?= ($discountFilter === 'regular') ? 'selected' : ''; ?>>Regular Price</option>

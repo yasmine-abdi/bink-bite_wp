@@ -133,7 +133,7 @@ $codPercent = count($allTxnsRaw) > 0 ? round(($countCod / count($allTxnsRaw)) * 
         <!-- KPI Metric Cards -->
         <div class="row g-3 g-md-4 mb-4">
             <div class="col-12 col-sm-6 col-xl-3">
-                <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100">
+                <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100 border-start border-4 border-success">
                     <div class="d-flex align-items-center justify-content-between mb-2">
                         <span class="text-muted extra-small fw-bold text-uppercase">Total Collected</span>
                         <div class="rounded-circle bg-success-subtle text-success p-2">
@@ -146,7 +146,7 @@ $codPercent = count($allTxnsRaw) > 0 ? round(($countCod / count($allTxnsRaw)) * 
             </div>
 
             <div class="col-12 col-sm-6 col-xl-3">
-                <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100">
+                <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100 border-start border-4 border-warning">
                     <div class="d-flex align-items-center justify-content-between mb-2">
                         <span class="text-muted extra-small fw-bold text-uppercase">Pending Payments</span>
                         <div class="rounded-circle bg-warning-subtle text-warning-emphasis p-2">
@@ -159,7 +159,7 @@ $codPercent = count($allTxnsRaw) > 0 ? round(($countCod / count($allTxnsRaw)) * 
             </div>
 
             <div class="col-12 col-sm-6 col-xl-3">
-                <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100">
+                <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100 border-start border-4 border-primary">
                     <div class="d-flex align-items-center justify-content-between mb-2">
                         <span class="text-muted extra-small fw-bold text-uppercase">COD Share</span>
                         <div class="rounded-circle bg-primary-subtle text-primary-accent p-2">
@@ -172,7 +172,7 @@ $codPercent = count($allTxnsRaw) > 0 ? round(($countCod / count($allTxnsRaw)) * 
             </div>
 
             <div class="col-12 col-sm-6 col-xl-3">
-                <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100">
+                <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100 border-start border-4 border-info">
                     <div class="d-flex align-items-center justify-content-between mb-2">
                         <span class="text-muted extra-small fw-bold text-uppercase">Online Gateways</span>
                         <div class="rounded-circle bg-secondary-subtle text-secondary p-2">

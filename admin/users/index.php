@@ -113,7 +113,7 @@ $activeAdminsCount = dbCountActiveAdmins();
         <!-- KPI Cards Row -->
         <div class="row g-3 mb-4">
             <div class="col-6 col-md-4 col-xl-2dot4">
-                <div class="card border-0 shadow-sm rounded-4 h-100 p-3 bg-white">
+                <div class="card border-0 shadow-sm rounded-4 h-100 p-3 bg-white border-start border-4 border-dark">
                     <div class="d-flex align-items-center gap-3">
                         <div class="stat-icon-wrap bg-pink-soft text-primary-accent rounded-3 d-flex align-items-center justify-content-center" style="width: 44px; height: 44px; font-size: 1.25rem;">
                             <i class="bi bi-people-fill"></i>
@@ -127,7 +127,7 @@ $activeAdminsCount = dbCountActiveAdmins();
             </div>
 
             <div class="col-6 col-md-4 col-xl-2dot4">
-                <div class="card border-0 shadow-sm rounded-4 h-100 p-3 bg-white">
+                <div class="card border-0 shadow-sm rounded-4 h-100 p-3 bg-white border-start border-4 border-success">
                     <div class="d-flex align-items-center gap-3">
                         <div class="stat-icon-wrap bg-success-subtle text-success rounded-3 d-flex align-items-center justify-content-center" style="width: 44px; height: 44px; font-size: 1.25rem;">
                             <i class="bi bi-person-check-fill"></i>
@@ -141,7 +141,7 @@ $activeAdminsCount = dbCountActiveAdmins();
             </div>
 
             <div class="col-6 col-md-4 col-xl-2dot4">
-                <div class="card border-0 shadow-sm rounded-4 h-100 p-3 bg-white">
+                <div class="card border-0 shadow-sm rounded-4 h-100 p-3 bg-white border-start border-4 border-danger">
                     <div class="d-flex align-items-center gap-3">
                         <div class="stat-icon-wrap bg-danger-subtle text-danger rounded-3 d-flex align-items-center justify-content-center" style="width: 44px; height: 44px; font-size: 1.25rem;">
                             <i class="bi bi-person-x-fill"></i>
@@ -155,7 +155,7 @@ $activeAdminsCount = dbCountActiveAdmins();
             </div>
 
             <div class="col-6 col-md-6 col-xl-2dot4">
-                <div class="card border-0 shadow-sm rounded-4 h-100 p-3 bg-white">
+                <div class="card border-0 shadow-sm rounded-4 h-100 p-3 bg-white border-start border-4 border-primary">
                     <div class="d-flex align-items-center gap-3">
                         <div class="stat-icon-wrap bg-primary-subtle text-primary rounded-3 d-flex align-items-center justify-content-center" style="width: 44px; height: 44px; font-size: 1.25rem;">
                             <i class="bi bi-person-lines-fill"></i>
@@ -169,7 +169,7 @@ $activeAdminsCount = dbCountActiveAdmins();
             </div>
 
             <div class="col-12 col-md-6 col-xl-2dot4">
-                <div class="card border-0 shadow-sm rounded-4 h-100 p-3 bg-white">
+                <div class="card border-0 shadow-sm rounded-4 h-100 p-3 bg-white border-start border-4 border-warning">
                     <div class="d-flex align-items-center gap-3">
                         <div class="stat-icon-wrap bg-warning-subtle text-warning-emphasis rounded-3 d-flex align-items-center justify-content-center" style="width: 44px; height: 44px; font-size: 1.25rem;">
                             <i class="bi bi-shield-lock-fill"></i>
@@ -214,10 +214,15 @@ $activeAdminsCount = dbCountActiveAdmins();
                     <div class="col-6 col-md-2">
                         <select name="date_range" class="form-select form-select-sm" onchange="this.form.submit()">
                             <option value="">All Registrations</option>
-                            <option value="today" <?= ($filters['date_range'] === 'today') ? 'selected' : ''; ?>>Today</option>
-                            <option value="this_week" <?= ($filters['date_range'] === 'this_week') ? 'selected' : ''; ?>>Last 7 Days</option>
-                            <option value="this_month" <?= ($filters['date_range'] === 'this_month') ? 'selected' : ''; ?>>Last 30 Days</option>
-                            <option value="this_year" <?= ($filters['date_range'] === 'this_year') ? 'selected' : ''; ?>>This Year</option>
+                            <option value="today" <?= ($filters['date_range'] === 'today') ? 'selected' : ''; ?>>Today (Maanta)</option>
+                            <option value="yesterday" <?= ($filters['date_range'] === 'yesterday') ? 'selected' : ''; ?>>Yesterday (Shalay)</option>
+                            <option value="this_week" <?= ($filters['date_range'] === 'this_week') ? 'selected' : ''; ?>>This Week (Asbuucan)</option>
+                            <option value="last_week" <?= ($filters['date_range'] === 'last_week') ? 'selected' : ''; ?>>Last Week (Asbuucii Hore)</option>
+                            <option value="7days" <?= ($filters['date_range'] === '7days') ? 'selected' : ''; ?>>Last 7 Days</option>
+                            <option value="this_month" <?= ($filters['date_range'] === 'this_month') ? 'selected' : ''; ?>>This Month (Bishan)</option>
+                            <option value="last_month" <?= ($filters['date_range'] === 'last_month') ? 'selected' : ''; ?>>Last Month (Bishii Hore)</option>
+                            <option value="30days" <?= ($filters['date_range'] === '30days') ? 'selected' : ''; ?>>Last 30 Days</option>
+                            <option value="this_year" <?= ($filters['date_range'] === 'this_year') ? 'selected' : ''; ?>>This Year (Sannadkan)</option>
                         </select>
                     </div>
 

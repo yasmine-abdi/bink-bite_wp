@@ -57,28 +57,28 @@ require_once __DIR__ . '/../includes/sidebar.php';
         <!-- KPI Summary Cards -->
         <div class="row g-3 mb-4">
             <div class="col-6 col-lg-3">
-                <div class="card p-3 border-0 bg-white shadow-sm h-100 rounded-4 stat-hover-card">
+                <div class="card p-3 border-0 bg-white shadow-sm h-100 rounded-4 stat-hover-card border-start border-4 border-warning">
                     <span class="text-muted extra-small text-uppercase fw-bold">Open Tickets</span>
                     <div class="h3 fw-bold text-warning my-1"><?= $supportAnalytics['open']; ?></div>
                     <span class="extra-small text-muted">Awaiting initial staff response</span>
                 </div>
             </div>
             <div class="col-6 col-lg-3">
-                <div class="card p-3 border-0 bg-white shadow-sm h-100 rounded-4 stat-hover-card">
+                <div class="card p-3 border-0 bg-white shadow-sm h-100 rounded-4 stat-hover-card border-start border-4 border-info">
                     <span class="text-muted extra-small text-uppercase fw-bold">In Progress</span>
                     <div class="h3 fw-bold text-info my-1"><?= $supportAnalytics['in_progress']; ?></div>
                     <span class="extra-small text-muted">Active staff conversation</span>
                 </div>
             </div>
             <div class="col-6 col-lg-3">
-                <div class="card p-3 border-0 bg-white shadow-sm h-100 rounded-4 stat-hover-card">
+                <div class="card p-3 border-0 bg-white shadow-sm h-100 rounded-4 stat-hover-card border-start border-4 border-success">
                     <span class="text-muted extra-small text-uppercase fw-bold">Resolved / Closed</span>
                     <div class="h3 fw-bold text-success my-1"><?= $supportAnalytics['resolved'] + $supportAnalytics['closed']; ?></div>
                     <span class="extra-small text-muted">Successfully handled inquiries</span>
                 </div>
             </div>
             <div class="col-6 col-lg-3">
-                <div class="card p-3 border-0 bg-white shadow-sm h-100 rounded-4 stat-hover-card">
+                <div class="card p-3 border-0 bg-white shadow-sm h-100 rounded-4 stat-hover-card border-start border-4 border-primary">
                     <span class="text-muted extra-small text-uppercase fw-bold">Avg Resolution Time</span>
                     <div class="h3 fw-bold text-dark my-1"><?= $supportAnalytics['avg_resolution_hours']; ?> hrs</div>
                     <span class="extra-small text-muted">From creation to resolution</span>
@@ -91,7 +91,7 @@ require_once __DIR__ . '/../includes/sidebar.php';
             <form method="GET" action="index.php" class="row g-3 align-items-end">
                 <div class="col-12 col-md-3">
                     <label for="statusSelect" class="form-label extra-small text-muted fw-bold text-uppercase mb-1">Status</label>
-                    <select name="status" id="statusSelect" class="form-select rounded-3">
+                    <select name="status" id="statusSelect" class="form-select rounded-3" onchange="this.form.submit()">
                         <option value="all" <?= ($status === 'all') ? 'selected' : ''; ?>>All Statuses</option>
                         <option value="open" <?= ($status === 'open') ? 'selected' : ''; ?>>Open</option>
                         <option value="in_progress" <?= ($status === 'in_progress') ? 'selected' : ''; ?>>In Progress</option>
@@ -102,7 +102,7 @@ require_once __DIR__ . '/../includes/sidebar.php';
 
                 <div class="col-6 col-md-3">
                     <label for="catSelect" class="form-label extra-small text-muted fw-bold text-uppercase mb-1">Category</label>
-                    <select name="category" id="catSelect" class="form-select rounded-3">
+                    <select name="category" id="catSelect" class="form-select rounded-3" onchange="this.form.submit()">
                         <option value="all" <?= ($category === 'all') ? 'selected' : ''; ?>>All Categories</option>
                         <option value="order_issue" <?= ($category === 'order_issue') ? 'selected' : ''; ?>>Order Issue</option>
                         <option value="delivery" <?= ($category === 'delivery') ? 'selected' : ''; ?>>Delivery</option>
@@ -115,7 +115,7 @@ require_once __DIR__ . '/../includes/sidebar.php';
 
                 <div class="col-6 col-md-3">
                     <label for="prioSelect" class="form-label extra-small text-muted fw-bold text-uppercase mb-1">Priority</label>
-                    <select name="priority" id="prioSelect" class="form-select rounded-3">
+                    <select name="priority" id="prioSelect" class="form-select rounded-3" onchange="this.form.submit()">
                         <option value="all" <?= ($priority === 'all') ? 'selected' : ''; ?>>All Priorities</option>
                         <option value="urgent" <?= ($priority === 'urgent') ? 'selected' : ''; ?>>Urgent</option>
                         <option value="high" <?= ($priority === 'high') ? 'selected' : ''; ?>>High</option>

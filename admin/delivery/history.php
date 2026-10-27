@@ -17,6 +17,8 @@ $filters = [
     'status' => trim($_GET['status'] ?? 'all'),
     'driver_id' => (int)($_GET['driver_id'] ?? 0),
     'date_range' => trim($_GET['date_range'] ?? 'all'),
+    'date_from' => trim($_GET['date_from'] ?? ''),
+    'date_to' => trim($_GET['date_to'] ?? ''),
     'search' => trim($_GET['search'] ?? '')
 ];
 
@@ -54,7 +56,7 @@ $totalCount = $historyData['total'];
         <!-- KPI Metrics -->
         <div class="row g-3 mb-4">
             <div class="col-6 col-md-3">
-                <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100">
+                <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100 border-start border-4 border-success">
                     <span class="text-muted extra-small fw-bold text-uppercase d-block mb-1">Total Completed</span>
                     <h3 class="h4 fw-bold text-success mb-0"><?= $analytics['total_delivered']; ?></h3>
                     <span class="extra-small text-muted">Successful orders</span>
@@ -62,7 +64,7 @@ $totalCount = $historyData['total'];
             </div>
 
             <div class="col-6 col-md-3">
-                <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100">
+                <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100 border-start border-4 border-danger">
                     <span class="text-muted extra-small fw-bold text-uppercase d-block mb-1">Delivery Issues</span>
                     <h3 class="h4 fw-bold text-danger mb-0"><?= $analytics['total_failed']; ?></h3>
                     <span class="extra-small text-muted">Failed delivery attempts</span>
@@ -70,7 +72,7 @@ $totalCount = $historyData['total'];
             </div>
 
             <div class="col-6 col-md-3">
-                <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100">
+                <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100 border-start border-4 border-primary">
                     <span class="text-muted extra-small fw-bold text-uppercase d-block mb-1">Avg Transit Time</span>
                     <h3 class="h4 fw-bold text-dark mb-0"><?= $analytics['avg_delivery_minutes']; ?> min</h3>
                     <span class="extra-small text-muted">Kitchen to doorstep</span>
@@ -78,7 +80,7 @@ $totalCount = $historyData['total'];
             </div>
 
             <div class="col-6 col-md-3">
-                <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100">
+                <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100 border-start border-4 border-info">
                     <span class="text-muted extra-small fw-bold text-uppercase d-block mb-1">Courier Fleet</span>
                     <h3 class="h4 fw-bold text-primary-accent mb-0"><?= $analytics['total_drivers']; ?> Active</h3>
                     <span class="extra-small text-muted"><?= $analytics['available_drivers']; ?> currently available</span>
@@ -97,7 +99,7 @@ $totalCount = $historyData['total'];
                 </div>
 
                 <div class="col-6 col-md-3">
-                    <select name="status" class="form-select form-select-sm bg-light border-0">
+                    <select name="status" class="form-select form-select-sm bg-light border-0" onchange="this.form.submit()">
                         <option value="all" <?= ($filters['status'] === 'all') ? 'selected' : ''; ?>>All Statuses</option>
                         <option value="delivered" <?= ($filters['status'] === 'delivered') ? 'selected' : ''; ?>>Delivered</option>
                         <option value="failed" <?= ($filters['status'] === 'failed') ? 'selected' : ''; ?>>Failed</option>
@@ -109,7 +111,7 @@ $totalCount = $historyData['total'];
                 </div>
 
                 <div class="col-6 col-md-2">
-                    <select name="driver_id" class="form-select form-select-sm bg-light border-0">
+                    <select name="driver_id" class="form-select form-select-sm bg-light border-0" onchange="this.form.submit()">
                         <option value="0">All Couriers</option>
                         <?php foreach ($allDrivers as $drv): ?>
                             <option value="<?= $drv['id']; ?>" <?= ($filters['driver_id'] === (int)$drv['id']) ? 'selected' : ''; ?>>
@@ -120,12 +122,17 @@ $totalCount = $historyData['total'];
                 </div>
 
                 <div class="col-6 col-md-2">
-                    <select name="date_range" class="form-select form-select-sm bg-light border-0">
-                        <option value="all" <?= ($filters['date_range'] === 'all') ? 'selected' : ''; ?>>All Time</option>
-                        <option value="today" <?= ($filters['date_range'] === 'today') ? 'selected' : ''; ?>>Today</option>
-                        <option value="yesterday" <?= ($filters['date_range'] === 'yesterday') ? 'selected' : ''; ?>>Yesterday</option>
-                        <option value="this_week" <?= ($filters['date_range'] === 'this_week') ? 'selected' : ''; ?>>Last 7 Days</option>
-                        <option value="this_month" <?= ($filters['date_range'] === 'this_month') ? 'selected' : ''; ?>>Last 30 Days</option>
+                    <select name="date_range" class="form-select form-select-sm bg-light border-0" onchange="this.form.submit()">
+                        <option value="all" <?= ($filters['date_range'] === 'all' || empty($filters['date_range'])) ? 'selected' : ''; ?>>All Time</option>
+                        <option value="today" <?= ($filters['date_range'] === 'today') ? 'selected' : ''; ?>>Today (Maanta)</option>
+                        <option value="yesterday" <?= ($filters['date_range'] === 'yesterday') ? 'selected' : ''; ?>>Yesterday (Shalay)</option>
+                        <option value="this_week" <?= ($filters['date_range'] === 'this_week') ? 'selected' : ''; ?>>This Week (Asbuucan)</option>
+                        <option value="last_week" <?= ($filters['date_range'] === 'last_week') ? 'selected' : ''; ?>>Last Week (Asbuucii Hore)</option>
+                        <option value="7days" <?= ($filters['date_range'] === '7days') ? 'selected' : ''; ?>>Last 7 Days</option>
+                        <option value="this_month" <?= ($filters['date_range'] === 'this_month') ? 'selected' : ''; ?>>This Month (Bishan)</option>
+                        <option value="last_month" <?= ($filters['date_range'] === 'last_month') ? 'selected' : ''; ?>>Last Month (Bishii Hore)</option>
+                        <option value="30days" <?= ($filters['date_range'] === '30days') ? 'selected' : ''; ?>>Last 30 Days</option>
+                        <option value="this_year" <?= ($filters['date_range'] === 'this_year') ? 'selected' : ''; ?>>This Year (Sannadkan)</option>
                     </select>
                 </div>
 

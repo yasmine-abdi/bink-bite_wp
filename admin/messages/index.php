@@ -96,28 +96,28 @@ $resolvedMessages = count(array_filter($allMessages, fn($m) => $m['status'] === 
         <!-- Messages Metric Cards -->
         <div class="row g-3 mb-4">
             <div class="col-6 col-lg-3">
-                <div class="card p-3 border-0 bg-white shadow-sm h-100 rounded-3 stat-hover-card">
+                <div class="card p-3 border-0 bg-white shadow-sm h-100 rounded-4 stat-hover-card border-start border-4 border-dark">
                     <span class="text-muted extra-small text-uppercase fw-bold">Total Inquiries</span>
                     <div class="h3 fw-bold text-dark my-1"><?= $totalMessages; ?></div>
                     <span class="extra-small text-muted">All customer messages</span>
                 </div>
             </div>
             <div class="col-6 col-lg-3">
-                <div class="card p-3 border-0 bg-white shadow-sm h-100 rounded-3 stat-hover-card <?= ($newMessages > 0) ? 'border-start border-danger border-4' : ''; ?>">
+                <div class="card p-3 border-0 bg-white shadow-sm h-100 rounded-4 stat-hover-card border-start border-4 border-danger">
                     <span class="text-muted extra-small text-uppercase fw-bold">New (Unread)</span>
                     <div class="h3 fw-bold text-danger my-1"><?= $newMessages; ?></div>
                     <span class="extra-small text-muted">Awaiting response</span>
                 </div>
             </div>
             <div class="col-6 col-lg-3">
-                <div class="card p-3 border-0 bg-white shadow-sm h-100 rounded-3 stat-hover-card">
+                <div class="card p-3 border-0 bg-white shadow-sm h-100 rounded-4 stat-hover-card border-start border-4 border-info">
                     <span class="text-muted extra-small text-uppercase fw-bold">In Review (Read)</span>
                     <div class="h3 fw-bold text-info my-1"><?= $readMessages; ?></div>
                     <span class="extra-small text-muted">Under investigation</span>
                 </div>
             </div>
             <div class="col-6 col-lg-3">
-                <div class="card p-3 border-0 bg-white shadow-sm h-100 rounded-3 stat-hover-card">
+                <div class="card p-3 border-0 bg-white shadow-sm h-100 rounded-4 stat-hover-card border-start border-4 border-success">
                     <span class="text-muted extra-small text-uppercase fw-bold">Resolved</span>
                     <div class="h3 fw-bold text-success my-1"><?= $resolvedMessages; ?></div>
                     <span class="extra-small text-muted">Completed inquiries</span>
@@ -138,7 +138,7 @@ $resolvedMessages = count(array_filter($allMessages, fn($m) => $m['status'] === 
 
                 <div class="col-6 col-md-4 col-lg-3">
                     <label for="msgStatus" class="form-label extra-small text-muted fw-bold text-uppercase mb-1">Status</label>
-                    <select name="status" id="msgStatus" class="form-select">
+                    <select name="status" id="msgStatus" class="form-select" onchange="this.form.submit()">
                         <option value="all" <?= ($statusFilter === 'all') ? 'selected' : ''; ?>>All Statuses</option>
                         <option value="new" <?= ($statusFilter === 'new') ? 'selected' : ''; ?>>New (Unread)</option>
                         <option value="read" <?= ($statusFilter === 'read') ? 'selected' : ''; ?>>Read</option>

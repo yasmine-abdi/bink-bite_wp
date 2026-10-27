@@ -121,7 +121,7 @@ $totalPages = ceil($totalCount / $limit);
         <div class="row g-3 mb-4">
             <div class="col-6 col-md-3 col-xl-1-5">
                 <a href="index.php" class="text-decoration-none">
-                    <div class="card border-0 shadow-sm rounded-3 p-3 bg-white h-100 stat-hover-card <?= ($filters['status'] === 'all' && empty($filters['payment_status'])) ? 'border-primary-accent border-2' : ''; ?>">
+                    <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100 stat-hover-card border-start border-4 border-dark <?= ($filters['status'] === 'all' && empty($filters['payment_status'])) ? 'shadow' : ''; ?>">
                         <div class="d-flex align-items-center gap-2 mb-1">
                             <span class="text-muted extra-small fw-bold text-uppercase">Total Orders</span>
                         </div>
@@ -132,7 +132,7 @@ $totalPages = ceil($totalCount / $limit);
 
             <div class="col-6 col-md-3 col-xl-1-5">
                 <a href="index.php?status=pending" class="text-decoration-none">
-                    <div class="card border-0 shadow-sm rounded-3 p-3 bg-white h-100 stat-hover-card <?= ($filters['status'] === 'pending') ? 'border-warning border-2' : ''; ?>">
+                    <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100 stat-hover-card border-start border-4 border-warning <?= ($filters['status'] === 'pending') ? 'shadow' : ''; ?>">
                         <div class="d-flex align-items-center gap-2 mb-1">
                             <i class="bi bi-clock text-warning fs-6"></i>
                             <span class="text-muted extra-small fw-bold text-uppercase">Pending</span>
@@ -144,7 +144,7 @@ $totalPages = ceil($totalCount / $limit);
 
             <div class="col-6 col-md-3 col-xl-1-5">
                 <a href="index.php?status=confirmed" class="text-decoration-none">
-                    <div class="card border-0 shadow-sm rounded-3 p-3 bg-white h-100 stat-hover-card <?= ($filters['status'] === 'confirmed') ? 'border-primary border-2' : ''; ?>">
+                    <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100 stat-hover-card border-start border-4 border-primary <?= ($filters['status'] === 'confirmed') ? 'shadow' : ''; ?>">
                         <div class="d-flex align-items-center gap-2 mb-1">
                             <i class="bi bi-check2-circle text-primary fs-6"></i>
                             <span class="text-muted extra-small fw-bold text-uppercase">Confirmed</span>
@@ -156,7 +156,7 @@ $totalPages = ceil($totalCount / $limit);
 
             <div class="col-6 col-md-3 col-xl-1-5">
                 <a href="index.php?status=preparing" class="text-decoration-none">
-                    <div class="card border-0 shadow-sm rounded-3 p-3 bg-white h-100 stat-hover-card <?= ($filters['status'] === 'preparing') ? 'border-warning-emphasis border-2' : ''; ?>">
+                    <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100 stat-hover-card border-start border-4 border-danger <?= ($filters['status'] === 'preparing') ? 'shadow' : ''; ?>">
                         <div class="d-flex align-items-center gap-2 mb-1">
                             <i class="bi bi-fire text-danger fs-6"></i>
                             <span class="text-muted extra-small fw-bold text-uppercase">Preparing</span>
@@ -168,7 +168,7 @@ $totalPages = ceil($totalCount / $limit);
 
             <div class="col-6 col-md-3 col-xl-1-5">
                 <a href="index.php?status=out_for_delivery" class="text-decoration-none">
-                    <div class="card border-0 shadow-sm rounded-3 p-3 bg-white h-100 stat-hover-card <?= ($filters['status'] === 'out_for_delivery') ? 'border-info border-2' : ''; ?>">
+                    <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100 stat-hover-card border-start border-4 border-info <?= ($filters['status'] === 'out_for_delivery') ? 'shadow' : ''; ?>">
                         <div class="d-flex align-items-center gap-2 mb-1">
                             <i class="bi bi-truck text-info fs-6"></i>
                             <span class="text-muted extra-small fw-bold text-uppercase">On Delivery</span>
@@ -180,7 +180,7 @@ $totalPages = ceil($totalCount / $limit);
 
             <div class="col-6 col-md-3 col-xl-1-5">
                 <a href="index.php?status=delivered" class="text-decoration-none">
-                    <div class="card border-0 shadow-sm rounded-3 p-3 bg-white h-100 stat-hover-card <?= ($filters['status'] === 'delivered') ? 'border-success border-2' : ''; ?>">
+                    <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100 stat-hover-card border-start border-4 border-success <?= ($filters['status'] === 'delivered') ? 'shadow' : ''; ?>">
                         <div class="d-flex align-items-center gap-2 mb-1">
                             <i class="bi bi-check-circle-fill text-success fs-6"></i>
                             <span class="text-muted extra-small fw-bold text-uppercase">Delivered</span>
@@ -192,7 +192,7 @@ $totalPages = ceil($totalCount / $limit);
 
             <div class="col-6 col-md-3 col-xl-1-5">
                 <a href="index.php?status=cancelled" class="text-decoration-none">
-                    <div class="card border-0 shadow-sm rounded-3 p-3 bg-white h-100 stat-hover-card <?= ($filters['status'] === 'cancelled') ? 'border-danger border-2' : ''; ?>">
+                    <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100 stat-hover-card border-start border-4 border-secondary <?= ($filters['status'] === 'cancelled') ? 'shadow' : ''; ?>">
                         <div class="d-flex align-items-center gap-2 mb-1">
                             <i class="bi bi-x-circle-fill text-danger fs-6"></i>
                             <span class="text-muted extra-small fw-bold text-uppercase">Cancelled</span>
@@ -204,7 +204,7 @@ $totalPages = ceil($totalCount / $limit);
 
             <div class="col-6 col-md-3 col-xl-1-5">
                 <a href="index.php?payment_status=pending" class="text-decoration-none">
-                    <div class="card border-0 shadow-sm rounded-3 p-3 bg-white h-100 stat-hover-card <?= ($filters['payment_status'] === 'pending') ? 'border-warning border-2' : ''; ?>">
+                    <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100 stat-hover-card border-start border-4 border-warning <?= ($filters['payment_status'] === 'pending') ? 'shadow' : ''; ?>">
                         <div class="d-flex align-items-center gap-2 mb-1">
                             <i class="bi bi-cash-coin text-warning-emphasis fs-6"></i>
                             <span class="text-muted extra-small fw-bold text-uppercase">Unpaid/COD</span>

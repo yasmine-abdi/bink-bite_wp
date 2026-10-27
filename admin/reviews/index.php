@@ -124,25 +124,25 @@ $avgRating = (float)$pdo->query("SELECT AVG(rating) FROM `food_reviews` WHERE `s
                 <!-- Metrics Row -->
                 <div class="row g-3 mb-4">
                     <div class="col-6 col-md-3">
-                        <div class="card border-0 shadow-sm rounded-4 p-3 bg-white text-center">
+                        <div class="card border-0 shadow-sm rounded-4 p-3 bg-white text-center border-start border-4 border-dark">
                             <span class="text-muted extra-small text-uppercase fw-bold d-block mb-1">Total Reviews</span>
                             <span class="h3 fw-bold text-dark mb-0"><?= $totalCount; ?></span>
                         </div>
                     </div>
                     <div class="col-6 col-md-3">
-                        <div class="card border-0 shadow-sm rounded-4 p-3 bg-white text-center">
+                        <div class="card border-0 shadow-sm rounded-4 p-3 bg-white text-center border-start border-4 border-warning">
                             <span class="text-muted extra-small text-uppercase fw-bold d-block mb-1">Pending Approval</span>
                             <span class="h3 fw-bold text-warning mb-0"><?= $pendingCount; ?></span>
                         </div>
                     </div>
                     <div class="col-6 col-md-3">
-                        <div class="card border-0 shadow-sm rounded-4 p-3 bg-white text-center">
+                        <div class="card border-0 shadow-sm rounded-4 p-3 bg-white text-center border-start border-4 border-success">
                             <span class="text-muted extra-small text-uppercase fw-bold d-block mb-1">Approved Public</span>
                             <span class="h3 fw-bold text-success mb-0"><?= $approvedCount; ?></span>
                         </div>
                     </div>
                     <div class="col-6 col-md-3">
-                        <div class="card border-0 shadow-sm rounded-4 p-3 bg-white text-center">
+                        <div class="card border-0 shadow-sm rounded-4 p-3 bg-white text-center border-start border-4 border-info">
                             <span class="text-muted extra-small text-uppercase fw-bold d-block mb-1">Average Score</span>
                             <span class="h3 fw-bold text-primary-accent mb-0"><?= $avgRating > 0 ? number_format($avgRating, 1) : '4.8'; ?> <small class="fs-6 text-muted">/ 5</small></span>
                         </div>

@@ -23,29 +23,12 @@ $pdo = getDbConnection();
 // Build Date Constraints
 $whereClause = "WHERE 1=1";
 $params = [];
-$today = date('Y-m-d');
-
-if ($period === 'today') {
-    $whereClause .= " AND DATE(o.created_at) = ?";
-    $params[] = $today;
-} elseif ($period === 'yesterday') {
-    $whereClause .= " AND DATE(o.created_at) = ?";
-    $params[] = date('Y-m-d', strtotime('-1 day'));
-} elseif ($period === '7_days') {
-    $whereClause .= " AND o.created_at >= ?";
-    $params[] = date('Y-m-d 00:00:00', strtotime('-6 days'));
-} elseif ($period === '30_days') {
-    $whereClause .= " AND o.created_at >= ?";
-    $params[] = date('Y-m-d 00:00:00', strtotime('-29 days'));
-} elseif ($period === 'this_month') {
-    $whereClause .= " AND o.created_at >= ?";
-    $params[] = date('Y-m-01 00:00:00');
-} elseif ($period === 'all_time') {
-    // No additional date constraint
-} elseif ($period === 'custom' && !empty($dateFrom) && !empty($dateTo)) {
-    $whereClause .= " AND o.created_at BETWEEN ? AND ?";
-    $params[] = $dateFrom . ' 00:00:00';
-    $params[] = $dateTo . ' 23:59:59';
+$dateFilter = dbBuildDateFilterSql($period, $dateFrom, $dateTo, 'o.created_at');
+if (!empty($dateFilter['sql'])) {
+    $whereClause .= $dateFilter['sql'];
+    foreach ($dateFilter['params'] as $p) {
+        $params[] = $p;
+    }
 }
 
 // Fetch Filtered Orders
@@ -244,13 +227,17 @@ require_once __DIR__ . '/../includes/sidebar.php';
             <form method="GET" action="index.php" class="row g-3 align-items-end">
                 <div class="col-12 col-md-4 col-lg-3">
                     <label for="periodSelect" class="form-label extra-small text-muted fw-bold text-uppercase mb-1">Timeframe</label>
-                    <select name="period" id="periodSelect" class="form-select rounded-3">
-                        <option value="today" <?= ($period === 'today') ? 'selected' : ''; ?>>Today</option>
-                        <option value="yesterday" <?= ($period === 'yesterday') ? 'selected' : ''; ?>>Yesterday</option>
-                        <option value="7_days" <?= ($period === '7_days') ? 'selected' : ''; ?>>Last 7 Days</option>
-                        <option value="30_days" <?= ($period === '30_days') ? 'selected' : ''; ?>>Last 30 Days</option>
-                        <option value="this_month" <?= ($period === 'this_month') ? 'selected' : ''; ?>>This Month</option>
-                        <option value="all_time" <?= ($period === 'all_time') ? 'selected' : ''; ?>>All Time</option>
+                    <select name="period" id="periodSelect" class="form-select rounded-3" onchange="if(this.value==='custom'){ document.getElementById('dateFromCol').style.display=''; document.getElementById('dateToCol').style.display=''; } else { document.getElementById('dateFromCol').style.display='none'; document.getElementById('dateToCol').style.display='none'; this.form.submit(); }">
+                        <option value="today" <?= ($period === 'today') ? 'selected' : ''; ?>>Today (Maanta)</option>
+                        <option value="yesterday" <?= ($period === 'yesterday') ? 'selected' : ''; ?>>Yesterday (Shalay)</option>
+                        <option value="this_week" <?= ($period === 'this_week') ? 'selected' : ''; ?>>This Week (Asbuucan)</option>
+                        <option value="last_week" <?= ($period === 'last_week') ? 'selected' : ''; ?>>Last Week (Asbuucii Hore)</option>
+                        <option value="7_days" <?= ($period === '7_days' || $period === '7days') ? 'selected' : ''; ?>>Last 7 Days</option>
+                        <option value="this_month" <?= ($period === 'this_month') ? 'selected' : ''; ?>>This Month (Bishan)</option>
+                        <option value="last_month" <?= ($period === 'last_month') ? 'selected' : ''; ?>>Last Month (Bishii Hore)</option>
+                        <option value="30_days" <?= ($period === '30_days' || $period === '30days') ? 'selected' : ''; ?>>Last 30 Days</option>
+                        <option value="this_year" <?= ($period === 'this_year') ? 'selected' : ''; ?>>This Year (Sannadkan)</option>
+                        <option value="all_time" <?= ($period === 'all_time' || $period === 'all') ? 'selected' : ''; ?>>All Time</option>
                         <option value="custom" <?= ($period === 'custom') ? 'selected' : ''; ?>>Custom Date Range</option>
                     </select>
                 </div>
@@ -275,7 +262,7 @@ require_once __DIR__ . '/../includes/sidebar.php';
         <!-- 8-Metric Financial Summary Grid -->
         <div class="row g-3 mb-4">
             <div class="col-6 col-md-3">
-                <div class="card p-3 border-0 bg-white shadow-sm h-100 rounded-4 stat-hover-card">
+                <div class="card p-3 border-0 bg-white shadow-sm h-100 rounded-4 stat-hover-card border-start border-4 border-success">
                     <div class="d-flex align-items-center justify-content-between mb-1">
                         <span class="text-muted extra-small text-uppercase fw-bold">Net Revenue</span>
                         <i class="bi bi-cash-stack text-success fs-5"></i>
@@ -285,7 +272,7 @@ require_once __DIR__ . '/../includes/sidebar.php';
                 </div>
             </div>
             <div class="col-6 col-md-3">
-                <div class="card p-3 border-0 bg-white shadow-sm h-100 rounded-4 stat-hover-card">
+                <div class="card p-3 border-0 bg-white shadow-sm h-100 rounded-4 stat-hover-card border-start border-4 border-primary">
                     <div class="d-flex align-items-center justify-content-between mb-1">
                         <span class="text-muted extra-small text-uppercase fw-bold">Gross Food Sales</span>
                         <i class="bi bi-tag-fill text-primary-accent fs-5"></i>
@@ -295,7 +282,7 @@ require_once __DIR__ . '/../includes/sidebar.php';
                 </div>
             </div>
             <div class="col-6 col-md-3">
-                <div class="card p-3 border-0 bg-white shadow-sm h-100 rounded-4 stat-hover-card">
+                <div class="card p-3 border-0 bg-white shadow-sm h-100 rounded-4 stat-hover-card border-start border-4 border-danger">
                     <div class="d-flex align-items-center justify-content-between mb-1">
                         <span class="text-muted extra-small text-uppercase fw-bold">Total Discounts</span>
                         <i class="bi bi-percent text-danger fs-5"></i>
@@ -305,7 +292,7 @@ require_once __DIR__ . '/../includes/sidebar.php';
                 </div>
             </div>
             <div class="col-6 col-md-3">
-                <div class="card p-3 border-0 bg-white shadow-sm h-100 rounded-4 stat-hover-card">
+                <div class="card p-3 border-0 bg-white shadow-sm h-100 rounded-4 stat-hover-card border-start border-4 border-info">
                     <div class="d-flex align-items-center justify-content-between mb-1">
                         <span class="text-muted extra-small text-uppercase fw-bold">Avg Order Value</span>
                         <i class="bi bi-graph-up-arrow text-info fs-5"></i>
@@ -315,7 +302,7 @@ require_once __DIR__ . '/../includes/sidebar.php';
                 </div>
             </div>
             <div class="col-6 col-md-3">
-                <div class="card p-3 border-0 bg-white shadow-sm h-100 rounded-4 stat-hover-card">
+                <div class="card p-3 border-0 bg-white shadow-sm h-100 rounded-4 stat-hover-card border-start border-4 border-dark">
                     <div class="d-flex align-items-center justify-content-between mb-1">
                         <span class="text-muted extra-small text-uppercase fw-bold">Total Orders</span>
                         <i class="bi bi-bag-check-fill text-primary fs-5"></i>
@@ -325,7 +312,7 @@ require_once __DIR__ . '/../includes/sidebar.php';
                 </div>
             </div>
             <div class="col-6 col-md-3">
-                <div class="card p-3 border-0 bg-white shadow-sm h-100 rounded-4 stat-hover-card">
+                <div class="card p-3 border-0 bg-white shadow-sm h-100 rounded-4 stat-hover-card border-start border-4 border-warning">
                     <div class="d-flex align-items-center justify-content-between mb-1">
                         <span class="text-muted extra-small text-uppercase fw-bold">Delivery Fees</span>
                         <i class="bi bi-truck text-warning fs-5"></i>
@@ -335,7 +322,7 @@ require_once __DIR__ . '/../includes/sidebar.php';
                 </div>
             </div>
             <div class="col-6 col-md-3">
-                <div class="card p-3 border-0 bg-white shadow-sm h-100 rounded-4 stat-hover-card">
+                <div class="card p-3 border-0 bg-white shadow-sm h-100 rounded-4 stat-hover-card border-start border-4 border-secondary">
                     <div class="d-flex align-items-center justify-content-between mb-1">
                         <span class="text-muted extra-small text-uppercase fw-bold">Payment Methods</span>
                         <i class="bi bi-credit-card-fill text-secondary fs-5"></i>
@@ -349,7 +336,7 @@ require_once __DIR__ . '/../includes/sidebar.php';
                 </div>
             </div>
             <div class="col-6 col-md-3">
-                <div class="card p-3 border-0 bg-white shadow-sm h-100 rounded-4 stat-hover-card">
+                <div class="card p-3 border-0 bg-white shadow-sm h-100 rounded-4 stat-hover-card border-start border-4 border-primary">
                     <div class="d-flex align-items-center justify-content-between mb-1">
                         <span class="text-muted extra-small text-uppercase fw-bold">Customer Base</span>
                         <i class="bi bi-people-fill text-primary-accent fs-5"></i>
