@@ -2231,6 +2231,14 @@ function dbGetAllContactMessages($filters = []) {
         $params[] = $s;
     }
 
+    $dateFilter = dbBuildDateFilterSql($filters['date_range'] ?? '', $filters['date_from'] ?? '', $filters['date_to'] ?? '', 'created_at');
+    if (!empty($dateFilter['sql'])) {
+        $sql .= $dateFilter['sql'];
+        foreach ($dateFilter['params'] as $p) {
+            $params[] = $p;
+        }
+    }
+
     $sql .= " ORDER BY `id` DESC";
     $stmt = $pdo->prepare($sql);
     $stmt->execute($params);
@@ -2475,6 +2483,84 @@ function dbGetSecurityMetrics() {
 /**
  * Retrieves security logs with filtering and pagination.
  */
+/**
+ * Standardized Date Range Filter Builder for SQL Queries across all system modules.
+ * Supports: today, yesterday, this_week, last_week (asbuucii hore),
+ * 7days, this_month, last_month, 30days, this_year, and custom date ranges (date_from, date_to).
+ *
+ * @param string $dateRange Predefined range identifier
+ * @param string $dateFrom Optional custom start date (YYYY-MM-DD)
+ * @param string $dateTo Optional custom end date (YYYY-MM-DD)
+ * @param string $column SQL column expression (e.g. 'o.created_at')
+ * @return array ['sql' => string, 'params' => array]
+ */
+function dbBuildDateFilterSql($dateRange = '', $dateFrom = '', $dateTo = '', $column = 'created_at') {
+    $sql = "";
+    $params = [];
+    $range = trim(strtolower((string)$dateRange));
+    $dateFrom = trim((string)$dateFrom);
+    $dateTo = trim((string)$dateTo);
+
+    // If custom range or explicit dates are provided
+    if ($range === 'custom' || (!empty($dateFrom) || !empty($dateTo))) {
+        if (!empty($dateFrom) && !empty($dateTo)) {
+            $sql .= " AND {$column} >= ? AND {$column} <= ?";
+            $params[] = $dateFrom . ' 00:00:00';
+            $params[] = $dateTo . ' 23:59:59';
+            return ['sql' => $sql, 'params' => $params];
+        } elseif (!empty($dateFrom)) {
+            $sql .= " AND {$column} >= ?";
+            $params[] = $dateFrom . ' 00:00:00';
+            return ['sql' => $sql, 'params' => $params];
+        } elseif (!empty($dateTo)) {
+            $sql .= " AND {$column} <= ?";
+            $params[] = $dateTo . ' 23:59:59';
+            return ['sql' => $sql, 'params' => $params];
+        }
+    }
+
+    switch ($range) {
+        case 'today':
+            $sql .= " AND DATE({$column}) = CURDATE()";
+            break;
+        case 'yesterday':
+            $sql .= " AND DATE({$column}) = DATE_SUB(CURDATE(), INTERVAL 1 DAY)";
+            break;
+        case 'this_week':
+            // Current calendar week (Monday to Sunday)
+            $sql .= " AND YEARWEEK({$column}, 1) = YEARWEEK(CURDATE(), 1)";
+            break;
+        case 'last_week':
+            // Last calendar week (Previous week's Monday to Sunday) - specifically requested by user ("kuwii asbuuci hore")
+            $sql .= " AND YEARWEEK({$column}, 1) = YEARWEEK(DATE_SUB(CURDATE(), INTERVAL 1 WEEK), 1)";
+            break;
+        case '7days':
+        case '7_days':
+            $sql .= " AND {$column} >= DATE_SUB(NOW(), INTERVAL 7 DAY)";
+            break;
+        case 'this_month':
+            $sql .= " AND YEAR({$column}) = YEAR(CURDATE()) AND MONTH({$column}) = MONTH(CURDATE())";
+            break;
+        case 'last_month':
+            $sql .= " AND YEAR({$column}) = YEAR(DATE_SUB(CURDATE(), INTERVAL 1 MONTH)) AND MONTH({$column}) = MONTH(DATE_SUB(CURDATE(), INTERVAL 1 MONTH))";
+            break;
+        case '30days':
+        case '30_days':
+            $sql .= " AND {$column} >= DATE_SUB(NOW(), INTERVAL 30 DAY)";
+            break;
+        case 'this_year':
+            $sql .= " AND YEAR({$column}) = YEAR(CURDATE())";
+            break;
+        case 'all':
+        case 'all_time':
+        default:
+            // No date filter applied
+            break;
+    }
+
+    return ['sql' => $sql, 'params' => $params];
+}
+
 function dbGetSecurityLogs($filters = [], $limit = 20, $offset = 0) {
     $pdo = getDbConnection();
     $sql = "SELECT s.*, 
@@ -2508,13 +2594,11 @@ function dbGetSecurityLogs($filters = [], $limit = 20, $offset = 0) {
         $params[] = $search;
     }
 
-    if (!empty($filters['date_range'])) {
-        if ($filters['date_range'] === 'today') {
-            $sql .= " AND DATE(s.created_at) = CURDATE()";
-        } elseif ($filters['date_range'] === '7days') {
-            $sql .= " AND s.created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)";
-        } elseif ($filters['date_range'] === '30days') {
-            $sql .= " AND s.created_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)";
+    $dateFilter = dbBuildDateFilterSql($filters['date_range'] ?? '', $filters['date_from'] ?? '', $filters['date_to'] ?? '', 's.created_at');
+    if (!empty($dateFilter['sql'])) {
+        $sql .= $dateFilter['sql'];
+        foreach ($dateFilter['params'] as $p) {
+            $params[] = $p;
         }
     }
 
@@ -2603,15 +2687,11 @@ function dbGetAllUsers($filters = [], $limit = 20, $offset = 0, $sort = 'created
         $params[] = $s;
     }
 
-    if (!empty($filters['date_range'])) {
-        if ($filters['date_range'] === 'today') {
-            $sql .= " AND DATE(u.created_at) = CURDATE()";
-        } elseif ($filters['date_range'] === 'this_week') {
-            $sql .= " AND u.created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)";
-        } elseif ($filters['date_range'] === 'this_month') {
-            $sql .= " AND u.created_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)";
-        } elseif ($filters['date_range'] === 'this_year') {
-            $sql .= " AND YEAR(u.created_at) = YEAR(CURDATE())";
+    $dateFilter = dbBuildDateFilterSql($filters['date_range'] ?? '', $filters['date_from'] ?? '', $filters['date_to'] ?? '', 'u.created_at');
+    if (!empty($dateFilter['sql'])) {
+        $sql .= $dateFilter['sql'];
+        foreach ($dateFilter['params'] as $p) {
+            $params[] = $p;
         }
     }
 
@@ -3381,13 +3461,11 @@ function dbGetAllNotificationsAdmin($filters = [], $limit = 20, $offset = 0) {
         $params[] = $search;
     }
 
-    if (!empty($filters['date_range'])) {
-        if ($filters['date_range'] === 'today') {
-            $sql .= " AND DATE(n.created_at) = CURDATE()";
-        } elseif ($filters['date_range'] === '7days') {
-            $sql .= " AND n.created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)";
-        } elseif ($filters['date_range'] === '30days') {
-            $sql .= " AND n.created_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)";
+    $dateFilter = dbBuildDateFilterSql($filters['date_range'] ?? '', $filters['date_from'] ?? '', $filters['date_to'] ?? '', 'n.created_at');
+    if (!empty($dateFilter['sql'])) {
+        $sql .= $dateFilter['sql'];
+        foreach ($dateFilter['params'] as $p) {
+            $params[] = $p;
         }
     }
 
@@ -3629,15 +3707,11 @@ function dbGetFilteredOrdersAdmin($filters = [], $limit = 20, $offset = 0) {
         $params[] = $s;
     }
 
-    if (!empty($filters['date_range'])) {
-        if ($filters['date_range'] === 'today') {
-            $sql .= " AND DATE(o.created_at) = CURDATE()";
-        } elseif ($filters['date_range'] === 'yesterday') {
-            $sql .= " AND DATE(o.created_at) = DATE_SUB(CURDATE(), INTERVAL 1 DAY)";
-        } elseif ($filters['date_range'] === '7days') {
-            $sql .= " AND o.created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)";
-        } elseif ($filters['date_range'] === '30days') {
-            $sql .= " AND o.created_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)";
+    $dateFilter = dbBuildDateFilterSql($filters['date_range'] ?? '', $filters['date_from'] ?? '', $filters['date_to'] ?? '', 'o.created_at');
+    if (!empty($dateFilter['sql'])) {
+        $sql .= $dateFilter['sql'];
+        foreach ($dateFilter['params'] as $p) {
+            $params[] = $p;
         }
     }
 
@@ -3970,6 +4044,14 @@ function dbAdminGetReviews($filters = [], $limit = 20, $offset = 0) {
         $params[] = $s;
         $params[] = $s;
         $params[] = $s;
+    }
+
+    $dateFilter = dbBuildDateFilterSql($filters['date_range'] ?? '', $filters['date_from'] ?? '', $filters['date_to'] ?? '', 'r.created_at');
+    if (!empty($dateFilter['sql'])) {
+        $sql .= $dateFilter['sql'];
+        foreach ($dateFilter['params'] as $p) {
+            $params[] = $p;
+        }
     }
 
     $countSql = "SELECT COUNT(*) FROM (" . $sql . ") AS count_tbl";
@@ -5330,20 +5412,11 @@ function dbGetDeliveryHistory(array $filters = [], int $page = 1, int $perPage =
         $params[] = (int)$filters['driver_id'];
     }
 
-    if (!empty($filters['date_range'])) {
-        switch ($filters['date_range']) {
-            case 'today':
-                $where .= " AND DATE(od.created_at) = CURDATE()";
-                break;
-            case 'yesterday':
-                $where .= " AND DATE(od.created_at) = DATE_SUB(CURDATE(), INTERVAL 1 DAY)";
-                break;
-            case 'this_week':
-                $where .= " AND od.created_at >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)";
-                break;
-            case 'this_month':
-                $where .= " AND od.created_at >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)";
-                break;
+    $dateFilter = dbBuildDateFilterSql($filters['date_range'] ?? '', $filters['date_from'] ?? '', $filters['date_to'] ?? '', 'od.created_at');
+    if (!empty($dateFilter['sql'])) {
+        $where .= $dateFilter['sql'];
+        foreach ($dateFilter['params'] as $p) {
+            $params[] = $p;
         }
     }
 
@@ -6120,6 +6193,14 @@ function dbGetAllSupportTickets(array $filters = [], int $page = 1, int $perPage
         $params[] = $searchTerm;
         $params[] = $searchTerm;
         $params[] = $searchTerm;
+    }
+
+    $dateFilter = dbBuildDateFilterSql($filters['date_range'] ?? '', $filters['date_from'] ?? '', $filters['date_to'] ?? '', 'st.created_at');
+    if (!empty($dateFilter['sql'])) {
+        $where .= $dateFilter['sql'];
+        foreach ($dateFilter['params'] as $p) {
+            $params[] = $p;
+        }
     }
 
     // Total count

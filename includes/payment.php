@@ -268,6 +268,16 @@ function dbGetAllPaymentTransactions($filters = []) {
         $params[] = $s;
     }
 
+    if (function_exists('dbBuildDateFilterSql')) {
+        $dateFilter = dbBuildDateFilterSql($filters['date_range'] ?? '', $filters['date_from'] ?? '', $filters['date_to'] ?? '', 'pt.created_at');
+        if (!empty($dateFilter['sql'])) {
+            $sql .= $dateFilter['sql'];
+            foreach ($dateFilter['params'] as $p) {
+                $params[] = $p;
+            }
+        }
+    }
+
     $sql .= " ORDER BY pt.id DESC";
     $stmt = $pdo->prepare($sql);
     $stmt->execute($params);

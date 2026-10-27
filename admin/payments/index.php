@@ -54,11 +54,17 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST' && ($_POST['action'] ?? '')
 $statusFilter = $_GET['status'] ?? 'all';
 $methodFilter = $_GET['method'] ?? 'all';
 $searchQuery = trim($_GET['search'] ?? '');
+$dateRange = trim($_GET['date_range'] ?? '');
+$dateFrom = trim($_GET['date_from'] ?? '');
+$dateTo = trim($_GET['date_to'] ?? '');
 
 $transactions = dbGetAllPaymentTransactions([
     'status' => $statusFilter,
     'method' => $methodFilter,
-    'search' => $searchQuery
+    'search' => $searchQuery,
+    'date_range' => $dateRange,
+    'date_from' => $dateFrom,
+    'date_to' => $dateTo
 ]);
 
 // Summary KPI calculations
@@ -184,7 +190,7 @@ $codPercent = count($allTxnsRaw) > 0 ? round(($countCod / count($allTxnsRaw)) * 
             <div class="card-header bg-white border-0 py-3 px-4 d-flex flex-wrap align-items-center justify-content-between gap-3">
                 <h5 class="fw-bold text-dark mb-0">Payment Logs (<?= count($transactions); ?>)</h5>
                 
-                <form action="index.php" method="GET" class="d-flex flex-wrap gap-2">
+                <form action="index.php" method="GET" class="d-flex flex-wrap align-items-center gap-2">
                     <select name="status" class="form-select form-select-sm" style="width: auto;" onchange="this.form.submit()">
                         <option value="all" <?= $statusFilter === 'all' ? 'selected' : ''; ?>>All Statuses</option>
                         <option value="pending" <?= $statusFilter === 'pending' ? 'selected' : ''; ?>>Pending</option>
@@ -199,9 +205,22 @@ $codPercent = count($allTxnsRaw) > 0 ? round(($countCod / count($allTxnsRaw)) * 
                         <option value="card" <?= $methodFilter === 'card' ? 'selected' : ''; ?>>Card</option>
                     </select>
 
+                    <select name="date_range" class="form-select form-select-sm" style="width: auto;" onchange="this.form.submit()">
+                        <option value="">All Time</option>
+                        <option value="today" <?= $dateRange === 'today' ? 'selected' : ''; ?>>Today</option>
+                        <option value="yesterday" <?= $dateRange === 'yesterday' ? 'selected' : ''; ?>>Yesterday</option>
+                        <option value="this_week" <?= $dateRange === 'this_week' ? 'selected' : ''; ?>>This Week (Asbuucan)</option>
+                        <option value="last_week" <?= $dateRange === 'last_week' ? 'selected' : ''; ?>>Last Week (Asbuucii Hore)</option>
+                        <option value="7days" <?= $dateRange === '7days' ? 'selected' : ''; ?>>Last 7 Days</option>
+                        <option value="this_month" <?= $dateRange === 'this_month' ? 'selected' : ''; ?>>This Month (Bishan)</option>
+                        <option value="last_month" <?= $dateRange === 'last_month' ? 'selected' : ''; ?>>Last Month (Bishii Hore)</option>
+                        <option value="30days" <?= $dateRange === '30days' ? 'selected' : ''; ?>>Last 30 Days</option>
+                        <option value="this_year" <?= $dateRange === 'this_year' ? 'selected' : ''; ?>>This Year</option>
+                    </select>
+
                     <input type="text" name="search" class="form-control form-control-sm" placeholder="Ref # / Order / Customer" value="<?= htmlspecialchars($searchQuery); ?>" style="width: 180px;">
                     <button type="submit" class="btn btn-primary-accent btn-sm rounded-pill px-3 text-white">Filter</button>
-                    <?php if (!empty($searchQuery) || $statusFilter !== 'all' || $methodFilter !== 'all'): ?>
+                    <?php if (!empty($searchQuery) || $statusFilter !== 'all' || $methodFilter !== 'all' || !empty($dateRange)): ?>
                         <a href="index.php" class="btn btn-light btn-sm rounded-pill border">Reset</a>
                     <?php endif; ?>
                 </form>

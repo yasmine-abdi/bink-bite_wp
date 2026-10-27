@@ -65,7 +65,9 @@ $filters = [
     'payment_status' => trim($_GET['payment_status'] ?? 'all'),
     'payment_method' => trim($_GET['payment_method'] ?? 'all'),
     'search' => trim($_GET['search'] ?? ''),
-    'date_range' => trim($_GET['date_range'] ?? '')
+    'date_range' => trim($_GET['date_range'] ?? ''),
+    'date_from' => trim($_GET['date_from'] ?? ''),
+    'date_to' => trim($_GET['date_to'] ?? '')
 ];
 
 $page = max(1, (int)($_GET['page'] ?? 1));
@@ -216,18 +218,18 @@ $totalPages = ceil($totalCount / $limit);
         <!-- Filter & Search Toolbar -->
         <div class="card border-0 shadow-sm rounded-3 mb-4 bg-white">
             <div class="card-body p-3">
-                <form method="GET" action="index.php" class="row g-2 align-items-center">
+                <form method="GET" action="index.php" id="orderFilterForm" class="row g-2 align-items-center">
                     <!-- Search Input -->
-                    <div class="col-12 col-md-4">
+                    <div class="col-12 col-md-3">
                         <div class="input-group input-group-sm">
                             <span class="input-group-text bg-light border-end-0"><i class="bi bi-search text-muted"></i></span>
-                            <input type="text" class="form-control bg-light border-start-0" name="search" placeholder="Search by order #, customer, phone, address..." value="<?= htmlspecialchars($filters['search'], ENT_QUOTES, 'UTF-8'); ?>">
+                            <input type="text" class="form-control bg-light border-start-0" name="search" placeholder="Search order #, customer, phone, address..." value="<?= htmlspecialchars($filters['search'], ENT_QUOTES, 'UTF-8'); ?>">
                         </div>
                     </div>
 
                     <!-- Status Filter -->
                     <div class="col-6 col-md-2">
-                        <select name="status" class="form-select form-select-sm bg-light">
+                        <select name="status" class="form-select form-select-sm bg-light" onchange="this.form.submit()">
                             <option value="all">All Order Statuses</option>
                             <option value="pending" <?= $filters['status'] === 'pending' ? 'selected' : ''; ?>>Pending (<?= $metrics['pending_orders']; ?>)</option>
                             <option value="confirmed" <?= $filters['status'] === 'confirmed' ? 'selected' : ''; ?>>Confirmed (<?= $metrics['confirmed_orders']; ?>)</option>
@@ -240,7 +242,7 @@ $totalPages = ceil($totalCount / $limit);
 
                     <!-- Payment Status Filter -->
                     <div class="col-6 col-md-2">
-                        <select name="payment_status" class="form-select form-select-sm bg-light">
+                        <select name="payment_status" class="form-select form-select-sm bg-light" onchange="this.form.submit()">
                             <option value="all">All Payments</option>
                             <option value="pending" <?= $filters['payment_status'] === 'pending' ? 'selected' : ''; ?>>Unpaid / Pending</option>
                             <option value="paid" <?= $filters['payment_status'] === 'paid' ? 'selected' : ''; ?>>Paid</option>
@@ -248,13 +250,19 @@ $totalPages = ceil($totalCount / $limit);
                     </div>
 
                     <!-- Date Range Filter -->
-                    <div class="col-6 col-md-2">
-                        <select name="date_range" class="form-select form-select-sm bg-light">
+                    <div class="col-6 col-md-3">
+                        <select name="date_range" id="orderDateRangeSelect" class="form-select form-select-sm bg-light" onchange="if(this.value==='custom'){ document.getElementById('orderCustomDateRow').classList.remove('d-none'); } else { document.getElementById('orderCustomDateRow').classList.add('d-none'); this.form.submit(); }">
                             <option value="">All Time</option>
-                            <option value="today" <?= $filters['date_range'] === 'today' ? 'selected' : ''; ?>>Today</option>
-                            <option value="yesterday" <?= $filters['date_range'] === 'yesterday' ? 'selected' : ''; ?>>Yesterday</option>
+                            <option value="today" <?= $filters['date_range'] === 'today' ? 'selected' : ''; ?>>Today (Maanta)</option>
+                            <option value="yesterday" <?= $filters['date_range'] === 'yesterday' ? 'selected' : ''; ?>>Yesterday (Shalay)</option>
+                            <option value="this_week" <?= $filters['date_range'] === 'this_week' ? 'selected' : ''; ?>>This Week (Asbuucan)</option>
+                            <option value="last_week" <?= $filters['date_range'] === 'last_week' ? 'selected' : ''; ?>>Last Week (Asbuucii Hore)</option>
                             <option value="7days" <?= $filters['date_range'] === '7days' ? 'selected' : ''; ?>>Last 7 Days</option>
+                            <option value="this_month" <?= $filters['date_range'] === 'this_month' ? 'selected' : ''; ?>>This Month (Bishan)</option>
+                            <option value="last_month" <?= $filters['date_range'] === 'last_month' ? 'selected' : ''; ?>>Last Month (Bishii Hore)</option>
                             <option value="30days" <?= $filters['date_range'] === '30days' ? 'selected' : ''; ?>>Last 30 Days</option>
+                            <option value="this_year" <?= $filters['date_range'] === 'this_year' ? 'selected' : ''; ?>>This Year (Sannadkan)</option>
+                            <option value="custom" <?= $filters['date_range'] === 'custom' ? 'selected' : ''; ?>>Custom Date Range...</option>
                         </select>
                     </div>
 
@@ -262,6 +270,21 @@ $totalPages = ceil($totalCount / $limit);
                     <div class="col-6 col-md-2 d-flex gap-2">
                         <button type="submit" class="btn btn-auth-primary btn-sm w-100">Filter</button>
                         <a href="index.php" class="btn btn-outline-secondary btn-sm" title="Reset Filters"><i class="bi bi-arrow-counterclockwise"></i></a>
+                    </div>
+
+                    <!-- Custom Date Picker Fields (Visible if Custom Date Range selected) -->
+                    <div class="col-12 pt-2 border-top mt-2 <?= ($filters['date_range'] === 'custom' || (!empty($filters['date_from']) || !empty($filters['date_to']))) ? '' : 'd-none'; ?>" id="orderCustomDateRow">
+                        <div class="d-flex flex-wrap align-items-center gap-2">
+                            <span class="extra-small text-muted fw-bold text-uppercase me-1"><i class="bi bi-calendar3 me-1"></i>Date Range:</span>
+                            <div style="max-width: 170px;">
+                                <input type="date" name="date_from" class="form-control form-control-sm bg-light" value="<?= htmlspecialchars($filters['date_from'], ENT_QUOTES, 'UTF-8'); ?>" placeholder="From Date">
+                            </div>
+                            <span class="extra-small text-muted">&rarr;</span>
+                            <div style="max-width: 170px;">
+                                <input type="date" name="date_to" class="form-control form-control-sm bg-light" value="<?= htmlspecialchars($filters['date_to'], ENT_QUOTES, 'UTF-8'); ?>" placeholder="To Date">
+                            </div>
+                            <button type="submit" class="btn btn-dark btn-sm px-3">Apply Date Range</button>
+                        </div>
                     </div>
                 </form>
             </div>
@@ -292,9 +315,10 @@ $totalPages = ceil($totalCount / $limit);
                         <?php if (empty($orders)): ?>
                             <tr>
                                 <td colspan="8" class="text-center py-5 text-muted">
-                                    <i class="bi bi-receipt fs-1 d-block mb-2 text-muted"></i>
-                                    <p class="mb-0 fw-semibold">No orders found.</p>
-                                    <span class="extra-small">No order records matched your search or filter parameters.</span>
+                                    <i class="bi bi-funnel fs-1 d-block mb-2 text-muted"></i>
+                                    <p class="mb-1 fw-bold text-dark fs-5">No orders found.</p>
+                                    <span class="extra-small d-block text-muted mb-3">No order records matched your active filter or search criteria.</span>
+                                    <a href="index.php" class="btn btn-outline-pink btn-sm rounded-pill px-3"><i class="bi bi-arrow-counterclockwise me-1"></i>Reset All Filters</a>
                                 </td>
                             </tr>
                         <?php else: ?>
